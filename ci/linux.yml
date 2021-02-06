@@ -1,0 +1,38 @@
+parameters:
+  toolchain: 'clang'
+  mode: 'debug'
+  arch: 'x64'
+
+jobs:
+  - job: 'Linux_${{ parameters.toolchain }}_${{ parameters.mode }}_${{ parameters.arch }}'
+
+    pool:
+      vmImage: ubuntu-20.04
+
+    container:
+      image: trflynn89/libfly:ubuntu2010_clang11_gcc10_jdk15
+
+    steps:
+    - template: setup.yml
+
+    - script: |
+        make install
+      displayName: 'Install'
+      failOnStderr: true
+
+    - script: |
+        echo "##vso[task.setvariable variable=config]mode=${{ parameters.mode }} toolchain=${{ parameters.toolchain }} arch=${{ parameters.arch }}"
+      displayName: 'Configure'
+
+    - script: |
+        make -j $(nproc) -C examples $(config)
+        make -j $(nproc) -C examples $(config) tests
+      displayName: 'Examples'
+      failOnStderr: true
+
+    - ${{ if eq(parameters.toolchain, 'clang') }}:
+      - ${{ if eq(parameters.mode, 'release') }}:
+        - ${{ if eq(parameters.arch, 'x64') }}:
+          - template: package.yml
+            parameters:
+              contents: 'out/flymake-*.tar.bz2'

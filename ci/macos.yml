@@ -1,0 +1,26 @@
+parameters:
+  mode: 'Debug'
+
+jobs:
+  - job: 'macOS_${{ parameters.mode }}'
+
+    pool:
+      vmImage: macOS-10.15
+
+    steps:
+    - template: setup.yml
+
+    - script: |
+        make install
+      displayName: 'Install'
+      failOnStderr: true
+
+    - script: |
+        echo "##vso[task.setvariable variable=config]mode=${{ parameters.mode }}"
+      displayName: 'Configure'
+
+    - script: |
+        make -j $(sysctl -n hw.ncpu) -C examples $(config)
+        make -j $(sysctl -n hw.ncpu) -C examples $(config) tests
+      displayName: 'Examples'
+      failOnStderr: true

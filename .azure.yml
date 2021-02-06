@@ -1,0 +1,71 @@
+trigger:
+  branches:
+    include:
+    - main
+
+  tags:
+    include:
+    - '*'
+
+jobs:
+  #### Linux Clang ####
+
+  - template: ci/linux.yml
+    parameters:
+      toolchain: 'clang'
+      mode: 'debug'
+      arch: 'x86'
+
+  - template: ci/linux.yml
+    parameters:
+      toolchain: 'clang'
+      mode: 'debug'
+      arch: 'x64'
+
+  - template: ci/linux.yml
+    parameters:
+      toolchain: 'clang'
+      mode: 'release'
+      arch: 'x86'
+
+  - template: ci/linux.yml
+    parameters:
+      toolchain: 'clang'
+      mode: 'release'
+      arch: 'x64'
+
+  #### Linux GCC ####
+
+  - template: ci/linux.yml
+    parameters:
+      toolchain: 'gcc'
+      mode: 'debug'
+      arch: 'x86'
+
+  - template: ci/linux.yml
+    parameters:
+      toolchain: 'gcc'
+      mode: 'debug'
+      arch: 'x64'
+
+  - template: ci/linux.yml
+    parameters:
+      toolchain: 'gcc'
+      mode: 'release'
+      arch: 'x86'
+
+  - template: ci/linux.yml
+    parameters:
+      toolchain: 'gcc'
+      mode: 'release'
+      arch: 'x64'
+
+  #### macOS ####
+
+  - template: ci/macos.yml
+    parameters:
+      mode: 'debug'
+
+  - template: ci/macos.yml
+    parameters:
+      mode: 'release'
