@@ -1,4 +1,4 @@
-package com.libfly.example;
+package com.flymake.example;
 
 import static org.junit.Assert.assertTrue;
 

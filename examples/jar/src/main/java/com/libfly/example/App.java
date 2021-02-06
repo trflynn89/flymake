@@ -1,4 +1,4 @@
-package com.libfly.example;
+package com.flymake.example;
 
 public class App
 {

@@ -1,31 +1,33 @@
-# Linux Build System Example
+# flymake Build System Examples
 
-This examples serves to demonstrate usage of the libfly Linux build system.
+These examples serve to demonstrate usage of the flymake build system.
 
-## Installing libfly
+## Installing flymake
 
-Installing libfly may be done from source or from a stable release package.
+Installing flymake may be done from source or from a stable release package.
 
 To install from source:
 
-    make -C libfly/build/nix release=1 install
+    make install
 
-To install from a release package, download the [latest release](https://github.com/trflynn89/libfly/releases)
-and extract the downloaded `.tar.gz` in the root system directory:
+To install from a release package, download the [latest release](https://github.com/trflynn89/flymake/releases)
+and extract the downloaded `.tar.bz2` in the root system directory:
 
-    tar -C / -xjf libfly-nix-[version].[arch].tar.bz2
+    tar -C / -xjf flymake-[version].tar.bz2
+
+Note: On macOS you may need to add `-mo` to the `tar` command.
 
 ## Example
 
-The usage example contains a main `Makefile` which imports the libfly build system from its
+The usage example contains a main `Makefile` which imports the flymake build system from its
 installed location. It contains the following example targets:
 
-1. libfly_c_example - A binary created from a C project.
-2. libfly_c_example_tests - An example unit test of the C project.
-3. libfly_cpp_example - A binary created from a C++ project.
-4. libfly_cpp_example_tests - An example unit test of the C++ project.
-5. libfly_jar_example - An executable JAR file created from a Java project.
+1. flymake_c_example - A binary created from a C project.
+2. flymake_c_example_tests - An example unit test of the C project.
+3. flymake_cpp_example - A binary created from a C++ project.
+4. flymake_cpp_example_tests - An example unit test of the C++ project.
+5. flymake_jar_example - An executable JAR file created from a Java project.
 
 To build all of the above:
 
-    make -C libfly/examples/build
+    make -C examples

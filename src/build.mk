@@ -4,10 +4,11 @@
 #     all = Build all targets added via $(ADD_TARGET) in the application Makefile.
 #     clean = Remove the build output directory for the current configuration.
 #     tests = Run all unit tests added via $(ADD_TARGET) with a target type of TEST.
+#     commands = Create a clangd compilation database for the current configuration.
 #     profile = Run all unit tests and generate a code profile report of the unit test execution.
 #     coverage = Generate a code coverage report of the last unit test execution.
 #     install = Extract any target installation package in the file system root directory.
-#     setup = Install the toolchain packages required to build libfly.
+#     setup = Install the toolchain packages used by flymake.
 #     style = Run clang-format on all source files.
 #
 # The above targets may be configured by a set of command line arguments defined in config.mk.
