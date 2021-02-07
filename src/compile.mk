@@ -57,17 +57,20 @@ endif
 # Define the make goal to link a binary target from a set of object files.
 #
 # $(1) = The path to the target output binary.
+# $(2) = The path(s) to the target dependency files.
 define BIN_RULES
 
 MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
+
+STATIC_$$(t) := $(filter %.a,$(2))
 
 $(1): OBJS := $$(OBJ_$$(t))
 $(1): CFLAGS := $(CFLAGS) $(CFLAGS_$(d))
 $(1): CXXFLAGS := $(CXXFLAGS) $(CXXFLAGS_$(d))
 $(1): LDFLAGS := $(LDFLAGS) $(LDFLAGS_$(d))
-$(1): LDLIBS := $(LDLIBS) $(LDLIBS_$(d))
+$(1): LDLIBS := $(LDLIBS) $(LDLIBS_$(d)) $$(STATIC_$$(t))
 
-$(1): $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
+$(1): $(2) $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
 
 	@echo -e "[$(RED)Link$(DEFAULT) $$(subst $(CURDIR)/,,$$@)]"
@@ -218,6 +221,7 @@ endef
 # $(1) = The path to the target root directory.
 # $(2) = The path to the target output binary.
 # $(3) = The path to the target release package.
+# $(4) = The path(s) to the target dependency files.
 define DEFINE_BIN_RULES
 
 # Push the current directory to the stack.
@@ -231,7 +235,7 @@ $$(eval $$(call OBJ_OUT_FILES, $$(SRC_$$(d))))
 $$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $$(dir))))
 
 # Define the compile rules.
-$$(eval $$(call BIN_RULES, $(2)))
+$$(eval $$(call BIN_RULES, $(2), $(4)))
 $$(eval $$(call PKG_RULES, $(2), $(3)))
 $$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d))))
 
