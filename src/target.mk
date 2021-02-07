@@ -1,5 +1,5 @@
-# Verify targets added via api.mk and define make goals for each of the targets. Before defining
-# the targets, the following special variable is defined:
+# Verify targets added via api.mk and define make goals for each of the targets. Before defining the
+# targets, the following special variable is defined:
 #
 #     t = The current target for which rules should be generated.
 #
@@ -10,11 +10,13 @@
 #     TARGET_PATH_$(t) = The target's source directory relative to $(SOURCE_ROOT).
 #     TARGET_FILE_$(t) = The target output files, dependent on the target type.
 #     TARGET_PACKAGE_$(t) = The target's output archived release package.
+#     TARGET_DEPENDENCIES_$(t) = Output files from other targets that this target depends on.
 #
 # $(TARGET_TYPE_$(t)) and $(TARGET_PATH_$(t)) are the values provided by the application Makefile
 # via $(ADD_TARGET). $(TARGET_FILE_$(t)) will be the path to the generated binary, libraries, or JAR
 # file. $(TARGET_PACKAGE_$(t)) will be the path to the archived release package defined via
-# release.mk.
+# release.mk.  If this target is a binary target, $(TARGET_DEPENDENCIES_$(t)) will be the path to
+# the generated libraries of other targets that this target depends on.
 #
 # Lastly, a make goal is defined for target $(t). This is a PHONY target for convenience to build
 # $(TARGET_FILE_$(t)) and $(TARGET_PACKAGE_$(t)). Make goals for those are defined by compile.mk
@@ -73,12 +75,19 @@ endif
 
 TARGET_PACKAGES += $$(TARGET_PACKAGE_$$(t))
 
+TARGET_DEPENDENCIES_$$(t) := \
+    $$(foreach dep, $$(TARGET_DEPENDENCIES_$$(target)), $$(TARGET_FILE_$$(dep)))
+
 # Define the make goal to build the targets.
 $$(t): $$(TARGET_FILE_$$(t)) $$(TARGET_PACKAGE_$$(t))
 
 # Define the compilation goals for the target.
 ifeq ($$(TARGET_TYPE_$$(t)), BIN)
-    $(call DEFINE_BIN_RULES, $$(TARGET_PATH_$$(t)), $$(TARGET_FILE_$$(t)), $$(TARGET_PACKAGE_$$(t)))
+    $(call DEFINE_BIN_RULES, \
+        $$(TARGET_PATH_$$(t)), \
+        $$(TARGET_FILE_$$(t)), \
+        $$(TARGET_PACKAGE_$$(t)), \
+        $$(TARGET_DEPENDENCIES_$$(t)))
 else ifeq ($$(TARGET_TYPE_$$(t)), LIB)
     $(call DEFINE_LIB_RULES, $$(TARGET_PATH_$$(t)), $$(TARGET_FILE_$$(t)), $$(TARGET_PACKAGE_$$(t)))
 else ifeq ($$(TARGET_TYPE_$$(t)), JAR)

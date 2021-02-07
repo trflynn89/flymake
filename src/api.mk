@@ -46,6 +46,7 @@ COVERAGE_BLACKLIST :=
 # $(1) = The target's name.
 # $(2) = The target's source directory relative to $(SOURCE_ROOT).
 # $(3) = The target's type.
+# $(4) = The target's dependencies.
 define ADD_TARGET
 
 ifeq ($$(strip $(1)), $$(filter $(TARGETS), $$(strip $(1))))
@@ -54,12 +55,27 @@ endif
 
 TARGETS += $(1)
 TARGET_PATH_$$(strip $(1)) := $(2)
+TARGET_DEPENDENCIES_$$(strip $(1)) := $(4)
 
 ifeq ($(strip $(3)), TEST)
     TEST_TARGETS += $(1)
     TARGET_TYPE_$$(strip $(1)) := BIN
 else
     TARGET_TYPE_$$(strip $(1)) := $(3)
+endif
+
+ifneq ($$(TARGET_DEPENDENCIES_$$(strip $(1))),)
+    ifneq ($$(TARGET_TYPE_$$(strip $(1))), BIN)
+        $$(error Target dependencies are only supported for binary targets, check your Makefile)
+    endif
+
+    $$(foreach dep, $$(TARGET_DEPENDENCIES_$$(strip $(1))), \
+        $$(if $$(filter $(TARGETS), $$(dep)),, \
+        $$(error Target dependency $$(dep) has not been defined, check your Makefile)))
+
+    $$(foreach dep, $$(TARGET_DEPENDENCIES_$$(strip $(1))), \
+        $$(if $$(filter $$(TARGET_TYPE_$$(dep)), LIB),, \
+        $$(error Target dependency $$(dep) must be a library, check your Makefile)))
 endif
 
 endef
