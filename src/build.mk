@@ -72,12 +72,22 @@ commands:
 	\
 	echo "$$commands" | while read -r command ; do \
 		file=$$(echo "$$command" | rev | cut -d' ' -f1 | rev); \
+		relative_file=$${file##$(SOURCE_ROOT)/}; \
+		skip_file=0; \
 		\
-		echo -e "\t{" >> $(database); \
-		echo -e "\t\t\"file\": \"$$file\"," >> $(database); \
-		echo -e "\t\t\"directory\": \"$(CXX_DIR)\"," >> $(database); \
-		echo -e "\t\t\"command\": \"$$command\"," >> $(database); \
-		echo -e "\t}," >> $(database); \
+		for f in $(COMPILATION_DATABASE_EXCLUSIONS) ; do \
+			if [[ $$relative_file == *"$$f"* ]] ; then \
+				skip_file=1; \
+			fi; \
+		done; \
+		\
+		if [[ $$skip_file -eq 0 ]] ; then \
+			echo -e "\t{" >> $(database); \
+			echo -e "\t\t\"file\": \"$$file\"," >> $(database); \
+			echo -e "\t\t\"directory\": \"$(CXX_DIR)\"," >> $(database); \
+			echo -e "\t\t\"command\": \"$$command\"," >> $(database); \
+			echo -e "\t}," >> $(database); \
+		fi; \
 	done; \
 	\
 	echo "]" >> $(database)
@@ -118,20 +128,20 @@ ifeq ($(toolchain), clang)
 
 	$(Q)llvm-cov show \
 		--instr-profile=$(report).prodata \
-		$(addprefix --ignore-filename-regex=, $(COVERAGE_BLACKLIST)) \
+		$(addprefix --ignore-filename-regex=, $(COVERAGE_EXCLUSIONS)) \
 		$(TEST_BINARIES) > $(report)
 
 ifeq ($(verbose), 1)
 	$(Q)llvm-cov show \
 		--instr-profile=$(report).prodata \
 		--format=html -Xdemangler=llvm-cxxfilt \
-		$(addprefix --ignore-filename-regex=, $(COVERAGE_BLACKLIST)) \
+		$(addprefix --ignore-filename-regex=, $(COVERAGE_EXCLUSIONS)) \
 		$(TEST_BINARIES) > $(report).html
 endif
 
 	$(Q)llvm-cov report \
 		--instr-profile=$(report).prodata \
-		$(addprefix --ignore-filename-regex=, $(COVERAGE_BLACKLIST)) \
+		$(addprefix --ignore-filename-regex=, $(COVERAGE_EXCLUSIONS)) \
 		$(TEST_BINARIES)
 
 else ifeq ($(toolchain), gcc)
@@ -141,7 +151,7 @@ else ifeq ($(toolchain), gcc)
 
 	$(Q)lcov --remove \
 		$(report) \
-		'/usr/*' $(addprefix *, $(addsuffix *, $(COVERAGE_BLACKLIST))) \
+		'/usr/*' $(addprefix *, $(addsuffix *, $(COVERAGE_EXCLUSIONS))) \
 		--output-file $(report)
 
 	$(Q)lcov --list $(report)
