@@ -61,13 +61,13 @@ define BIN_RULES
 
 MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
 
-$(1): OBJS := $$(OBJ_$(t))
+$(1): OBJS := $$(OBJ_$$(t))
 $(1): CFLAGS := $(CFLAGS) $(CFLAGS_$(d))
 $(1): CXXFLAGS := $(CXXFLAGS) $(CXXFLAGS_$(d))
 $(1): LDFLAGS := $(LDFLAGS) $(LDFLAGS_$(d))
 $(1): LDLIBS := $(LDLIBS) $(LDLIBS_$(d))
 
-$(1): $$(OBJ_$(t)) $$(MAKEFILES_$(d))
+$(1): $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
 
 	@echo -e "[$(RED)Link$(DEFAULT) $$(subst $(CURDIR)/,,$$@)]"
@@ -76,21 +76,26 @@ $(1): $$(OBJ_$(t)) $$(MAKEFILES_$(d))
 endef
 
 # Define the make goal to link static and shared targets from a set of object files.
+#
+# $(1) = The path to the target output files.
 define LIB_RULES
 
 MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
 
-%.a %.so.$(VERSION) %.dylib.$(VERSION): OBJS := $$(OBJ_$(t))
-%.a %.so.$(VERSION) %.dylib.$(VERSION): CFLAGS := $(CFLAGS_$(d)) $(CFLAGS)
-%.a %.so.$(VERSION) %.dylib.$(VERSION): CXXFLAGS := $(CXXFLAGS_$(d)) $(CXXFLAGS)
-%.a %.so.$(VERSION) %.dylib.$(VERSION): LDFLAGS := $(LDFLAGS_$(d)) $(LDFLAGS)
+STATIC_$$(t) := $(filter %.a,$(1))
+SHARED_$$(t) := $(filter %.so.$(VERSION) %.dylib.$(VERSION),$(1))
 
-%.a: $$(OBJ_$(t)) $$(MAKEFILES_$(d))
+$$(STATIC_$$(t)) $$(SHARED_$$(t)): OBJS := $$(OBJ_$$(t))
+$$(STATIC_$$(t)) $$(SHARED_$$(t)): CFLAGS := $(CFLAGS_$(d)) $(CFLAGS)
+$$(STATIC_$$(t)) $$(SHARED_$$(t)): CXXFLAGS := $(CXXFLAGS_$(d)) $(CXXFLAGS)
+$$(STATIC_$$(t)) $$(SHARED_$$(t)): LDFLAGS := $(LDFLAGS_$(d)) $(LDFLAGS)
+
+$$(STATIC_$$(t)): $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
 	@echo -e "[$(GREEN)Static$(DEFAULT) $$(subst $(CURDIR)/,,$$@)]"
 	$(STATIC)
 
-%.so.$(VERSION) %.dylib.$(VERSION): $$(OBJ_$(t)) $$(MAKEFILES_$(d))
+$$(SHARED_$$(t)): $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
 	@echo -e "[$(GREEN)Shared$(DEFAULT) $$(subst $(CURDIR)/,,$$@)]"
 	$(SHARED_CXX)
@@ -106,14 +111,14 @@ define JAR_RULES
 
 MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
 
-$(1): SOURCES := $$(SOURCES_$(t))
+$(1): SOURCES := $$(SOURCES_$$(t))
 $(1): JFLAGS := $(JFLAGS) $(JFLAGS_$(d))
-$(1): CLASS_DIR := $$(CLASS_DIR_$(t))
-$(1): CLASS_PATH := $$(CLASS_PATH_$(t))
+$(1): CLASS_DIR := $$(CLASS_DIR_$$(t))
+$(1): CLASS_PATH := $$(CLASS_PATH_$$(t))
 $(1): MAIN_CLASS := $(2)
-$(1): CONTENTS := $$(CONTENTS_$(t))
+$(1): CONTENTS := $$(CONTENTS_$$(t))
 
-$(1): $$(SOURCES_$(t)) $$(MAKEFILES_$(d))
+$(1): $$(SOURCES_$$(t)) $$(MAKEFILES_$(d))
 	@# Remove the target's class directory as a safe measure in case Java files have been deleted.
 	@$(RM) -r $$(CLASS_DIR)
 
@@ -124,7 +129,7 @@ $(1): $$(SOURCES_$(t)) $$(MAKEFILES_$(d))
 	$(COMP_JAVA)
 
 	@# Iterate over every JAR file in the class path and extracts them for inclusion in the target.
-	$(Q)for jar in $$(CLASS_PATH_JAR_$(t)) ; do \
+	$(Q)for jar in $$(CLASS_PATH_JAR_$$(t)) ; do \
 		unzip $(ZIP_EXTRACT_FLAGS) -o $$$$jar -d $$(CLASS_DIR) "*.class" ; \
 	done
 
@@ -141,7 +146,7 @@ endef
 # $(2) = The path to the target release package.
 define PKG_RULES
 
-ifeq ($$(REL_CMDS_$(t)),)
+ifeq ($$(REL_CMDS_$$(t)),)
 
 $(2):
 
@@ -149,14 +154,14 @@ else
 
 MAKEFILES_$(d) := $(BUILD_ROOT)/*.mk
 
-$(2): REL_CMDS := $$(REL_CMDS_$(t))
-$(2): REL_NAME := $$(REL_NAME_$(t))
-$(2): ETC_TMP_DIR := $$(ETC_TMP_DIR_$(t))
-$(2): REL_BIN_DIR := $$(REL_BIN_DIR_$(t))
-$(2): REL_LIB_DIR := $$(REL_LIB_DIR_$(t))
-$(2): REL_INC_DIR := $$(REL_INC_DIR_$(t))
-$(2): REL_SRC_DIR := $$(REL_SRC_DIR_$(t))
-$(2): REL_UNINSTALL := $$(REL_UNINSTALL_$(t))
+$(2): REL_CMDS := $$(REL_CMDS_$$(t))
+$(2): REL_NAME := $$(REL_NAME_$$(t))
+$(2): ETC_TMP_DIR := $$(ETC_TMP_DIR_$$(t))
+$(2): REL_BIN_DIR := $$(REL_BIN_DIR_$$(t))
+$(2): REL_LIB_DIR := $$(REL_LIB_DIR_$$(t))
+$(2): REL_INC_DIR := $$(REL_INC_DIR_$$(t))
+$(2): REL_SRC_DIR := $$(REL_SRC_DIR_$$(t))
+$(2): REL_UNINSTALL := $$(REL_UNINSTALL_$$(t))
 
 $(2): $(1) $$(MAKEFILES_$(d))
 	$(Q)$$(BUILD_REL)
@@ -256,7 +261,7 @@ $$(eval $$(call OBJ_OUT_FILES, $$(SRC_$$(d))))
 $$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $$(dir))))
 
 # Define the compile rules.
-$$(eval $$(call LIB_RULES))
+$$(eval $$(call LIB_RULES, $(2)))
 $$(eval $$(call PKG_RULES, $(2), $(3)))
 $$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d))))
 
