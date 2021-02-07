@@ -11,6 +11,11 @@ jobs:
     - template: setup.yml
 
     - script: |
+        make --version
+      displayName: 'Version'
+      failOnStderr: true
+
+    - script: |
         make install
       displayName: 'Install'
       failOnStderr: true
