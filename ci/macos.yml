@@ -1,5 +1,5 @@
 parameters:
-  mode: 'Debug'
+  mode: 'debug'
 
 jobs:
   - job: 'macOS_${{ parameters.mode }}'

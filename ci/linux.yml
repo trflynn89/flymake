@@ -1,10 +1,9 @@
 parameters:
   toolchain: 'clang'
   mode: 'debug'
-  arch: 'x64'
 
 jobs:
-  - job: 'Linux_${{ parameters.toolchain }}_${{ parameters.mode }}_${{ parameters.arch }}'
+  - job: 'Linux_${{ parameters.toolchain }}_${{ parameters.mode }}'
 
     pool:
       vmImage: ubuntu-20.04
@@ -21,7 +20,7 @@ jobs:
       failOnStderr: true
 
     - script: |
-        echo "##vso[task.setvariable variable=config]mode=${{ parameters.mode }} toolchain=${{ parameters.toolchain }} arch=${{ parameters.arch }}"
+        echo "##vso[task.setvariable variable=config]mode=${{ parameters.mode }} toolchain=${{ parameters.toolchain }}"
       displayName: 'Configure'
 
     - script: |
@@ -38,7 +37,6 @@ jobs:
 
     - ${{ if eq(parameters.toolchain, 'clang') }}:
       - ${{ if eq(parameters.mode, 'release') }}:
-        - ${{ if eq(parameters.arch, 'x64') }}:
-          - template: package.yml
-            parameters:
-              contents: 'out/flymake-*.tar.bz2'
+        - template: package.yml
+          parameters:
+            contents: 'out/flymake-*.tar.bz2'
