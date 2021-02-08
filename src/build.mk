@@ -204,9 +204,12 @@ else
 endif
 
 # Style enforcement.
+style: OPEN_PAREN := (
+style: CLOSE_PAREN := )
 style:
 	$(Q)clang-format -i $$(find $(SOURCE_ROOT)  \
-		-not \( -path "*extern*" -prune \) \
+		$(foreach exclusion, $(STYLE_ENFORCEMENT_EXCLUSIONS), \
+			-not \$(OPEN_PAREN) -path "*$(exclusion)*" -prune \$(CLOSE_PAREN)) \
 		-type f -name "*.h" -o -name "*.hh" -o -name "*.hpp" \
 		-o -name "*.c" -o -name "*.cc" -o -name "*.cpp" \
 		-o -name "*.m" -o -name "*.mm" \

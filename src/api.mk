@@ -26,6 +26,9 @@ TARGETS :=
 # List of all test target names.
 TEST_TARGETS :=
 
+# List of paths to exclude from style enforcement.
+STYLE_ENFORCEMENT_EXCLUSIONS :=
+
 # List of paths to exclude from code coverage reporting.
 COVERAGE_EXCLUSIONS :=
 
@@ -80,6 +83,19 @@ ifneq ($$(TARGET_DEPENDENCIES_$$(strip $(1))),)
         $$(if $$(filter $$(TARGET_TYPE_$$(dep)), LIB),, \
         $$(error Target dependency $$(dep) must be a library, check your Makefile)))
 endif
+
+endef
+
+# Add a path to the style enforcement exclusion list. The path may be a directory or file.
+#
+# $(1) = The path relative to $(SOURCE_ROOT) to exclude.
+define EXCLUDE_FROM_STYLE_ENFORCEMENT
+
+ifeq ($$(wildcard $(SOURCE_ROOT)/$$(strip $(1))),)
+    $$(error Could not find path $$(strip $(1)), check your Makefile)
+endif
+
+STYLE_ENFORCEMENT_EXCLUSIONS += $(1)
 
 endef
 
