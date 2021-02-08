@@ -216,6 +216,21 @@ $(1)/%.o: $(d)/%.mm $$(MAKEFILES_$(d))
 
 endef
 
+# Define the list of source files to all files in the current directory.
+#
+# $(1) - Family (CPP or JAVA) of files to wildcard.
+define WILDCARD_SOURCES
+
+ifeq ($(strip $(1)), CPP)
+    EXTENSIONS_$(d) := .c .cc .cpp .m .mm
+else ifeq ($(strip $(1)), JAVA)
+    EXTENSIONS_$(d) := .java
+endif
+
+SRC_$(d) := $$(foreach ext, $$(EXTENSIONS_$(d)), $$(wildcard $(d)/*$$(ext)))
+
+endef
+
 # Define all make goals required to build a target of type BIN (or TEST).
 #
 # $(1) = The path to the target root directory.
@@ -228,7 +243,12 @@ define DEFINE_BIN_RULES
 $$(eval $$(call PUSH_DIR, $(1)))
 
 # Define source, object, dependency, and binary files.
-include $$(d)/files.mk
+ifeq ($$(wildcard $$(d)/files.mk),)
+    $$(eval $$(call WILDCARD_SOURCES, CPP))
+else
+    include $$(d)/files.mk
+endif
+
 $$(eval $$(call OBJ_OUT_FILES, $$(SRC_$$(d))))
 
 # Include the source directories.
@@ -258,7 +278,12 @@ define DEFINE_LIB_RULES
 $$(eval $$(call PUSH_DIR, $(1)))
 
 # Define source, object, dependency, and binary files.
-include $$(d)/files.mk
+ifeq ($$(wildcard $$(d)/files.mk),)
+    $$(eval $$(call WILDCARD_SOURCES, CPP))
+else
+    include $$(d)/files.mk
+endif
+
 $$(eval $$(call OBJ_OUT_FILES, $$(SRC_$$(d))))
 
 # Include the source directories.
@@ -314,12 +339,7 @@ $$(eval $$(call PUSH_DIR, $(1)))
 
 # Define source, object and dependency files.
 ifeq ($$(wildcard $$(d)/files.mk),)
-    SRC_$$(d) := \
-        $$(wildcard $$(d)/*.c) \
-        $$(wildcard $$(d)/*.cc) \
-        $$(wildcard $$(d)/*.cpp) \
-        $$(wildcard $$(d)/*.m) \
-        $$(wildcard $$(d)/*.mm)
+    $$(eval $$(call WILDCARD_SOURCES, CPP))
 else
     include $$(d)/files.mk
 endif
@@ -347,8 +367,7 @@ $$(eval $$(call PUSH_DIR, $(1)))
 
 # Define source, object and dependency files.
 ifeq ($$(wildcard $$(d)/files.mk),)
-    SRC_$$(d) := \
-        $$(wildcard $$(d)/*.java)
+    $$(eval $$(call WILDCARD_SOURCES, JAVA))
 else
     include $$(d)/files.mk
 endif
