@@ -10,13 +10,13 @@ VERSION = 1.0.0
 include /usr/local/src/fly/api.mk
 
 # Main targets.
-$(eval $(call ADD_TARGET, flymake_c_example, c, BIN))
-$(eval $(call ADD_TARGET, flymake_cpp_example, cpp, BIN))
-$(eval $(call ADD_TARGET, flymake_jar_example, jar/src/main/java, JAR))
+$(eval $(call ADD_TARGET, c_example, c, LIB))
+$(eval $(call ADD_TARGET, cpp_example, cpp, LIB))
+$(eval $(call ADD_TARGET, jar_example, jar/src/main/java, JAR))
 
 # Test targets.
-$(eval $(call ADD_TARGET, flymake_c_example_tests, c/test, TEST))
-$(eval $(call ADD_TARGET, flymake_cpp_example_tests, cpp/test, TEST))
+$(eval $(call ADD_TARGET, c_example_tests, c/test, TEST, c_example))
+$(eval $(call ADD_TARGET, cpp_example_tests, cpp/test, TEST, cpp_example))
 
 # Import the build system.
 include /usr/local/src/fly/build.mk
