@@ -44,3 +44,12 @@ endif
 ifneq ($(arch), $(filter $(SUPPORTED_ARCH), $(arch)))
     $(error Architecture $(arch) not supported, check system.mk)
 endif
+
+# System-dependent shared library extension.
+ifeq ($(SYSTEM), LINUX)
+    SHARED_LIB_EXT := so
+else ifeq ($(SYSTEM), MACOS)
+    SHARED_LIB_EXT := dylib
+else
+    $(error Unknown system $(SYSTEM), check system.mk)
+endif
