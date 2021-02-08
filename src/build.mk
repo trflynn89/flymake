@@ -139,10 +139,13 @@ ifeq ($(verbose), 1)
 		$(TEST_BINARIES) > $(report).html
 endif
 
-	$(Q)llvm-cov report \
-		--instr-profile=$(report).prodata \
-		$(addprefix --ignore-filename-regex=, $(COVERAGE_EXCLUSIONS)) \
-		$(TEST_BINARIES)
+	$(Q)for tgt in $(TEST_BINARIES) ; do \
+		echo -e "\n$(BLUE)Coverage for:$(YELLOW) $$tgt$(DEFAULT)\n"; \
+		llvm-cov report \
+			--instr-profile=$(report).prodata \
+			$(addprefix --ignore-filename-regex=, $(COVERAGE_EXCLUSIONS)) \
+			$$tgt; \
+	done
 
 else ifeq ($(toolchain), gcc)
 	$(Q)lcov --capture \

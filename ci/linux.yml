@@ -30,6 +30,12 @@ jobs:
       displayName: 'Examples'
       failOnStderr: true
 
+    - ${{ if eq(parameters.mode, 'debug') }}:
+      - script: |
+          make -j $(nproc) -C examples $(config) coverage
+        displayName: 'Coverage'
+        failOnStderr: true
+
     - ${{ if eq(parameters.toolchain, 'clang') }}:
       - ${{ if eq(parameters.mode, 'release') }}:
         - ${{ if eq(parameters.arch, 'x64') }}:
