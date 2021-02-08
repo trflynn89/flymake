@@ -10,6 +10,12 @@ mode := debug
 # Build 32-bit or 64-bit target.
 arch := $(arch)
 
+# C language standard.
+cstandard = c2x
+
+# C++ language standard.
+cxxstandard = c++2a
+
 # Compile caching system.
 cacher :=
 

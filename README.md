@@ -259,14 +259,16 @@ The following secondary goals are defined by flymake to aid in development:
 
 The following command-line options may be specified when running `make` to configure the build:
 
-| Option      | Accepted Values               | Default Value                 | Description |
-| :--         | :--                           | :--                           | :--         |
-| `toolchain` | `clang`, `gcc`                | `clang`                       | Compilation toolchain for C-family targets. |
-| `mode`      | `debug`, `release`, `profile` | `debug`                       | Compilation mode (see (1) below). |
-| `arch`      | `x86`, `x64`                  | Defaults to host architecture | Compilation architecture, 32-bit or 64-bit. |
-| `cacher`    | See description               | None                          | Enable use of a compilation cache (see (2) below). |
-| `stylized`  | `0`, `1`                      | `1`                           | Enable pretty build output. |
-| `verbose`   | `0`, `1`                      | `0`                           | Enable verbose build output. |
+| Option        | Accepted Values               | Default Value                 | Description |
+| :--           | :--                           | :--                           | :--         |
+| `toolchain`   | `clang`, `gcc`                | `clang`                       | Compilation toolchain for C-family targets. |
+| `mode`        | `debug`, `release`, `profile` | `debug`                       | Compilation mode (see (1) below). |
+| `arch`        | `x86`, `x64`                  | Defaults to host architecture | Compilation architecture, 32-bit or 64-bit. |
+| `cstandard`   | See description               | `c2x`                         | The language standard to use for C files, passed to `-std`. |
+| `cxxstandard` | See description               | `c++2a`                       | The language standard to use for C++ files, passed to `-std`. |
+| `cacher`      | See description               | None                          | Enable use of a compilation cache (see (2) below). |
+| `stylized`    | `0`, `1`                      | `1`                           | Enable pretty build output. |
+| `verbose`     | `0`, `1`                      | `0`                           | Enable verbose build output. |
 
 1. Compilation mode changes the build flags used to build source files:
     * `debug` - Debugging symbols and code coverage instrumentation are added to compiled sources.
