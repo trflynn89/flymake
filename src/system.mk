@@ -4,10 +4,11 @@ ARCH := $(shell uname -m)
 SUDO := $(shell which sudo)
 
 # Define installation directories.
-INSTALL_BIN_DIR := /usr/local/bin
-INSTALL_INC_DIR := /usr/local/include
-INSTALL_SRC_DIR := /usr/local/src
-INSTALL_LIB_DIR := /usr/local/lib
+INSTALL_ROOT := /usr/local
+INSTALL_BIN_DIR := $(INSTALL_ROOT)/bin
+INSTALL_INC_DIR := $(INSTALL_ROOT)/include
+INSTALL_SRC_DIR := $(INSTALL_ROOT)/src
+INSTALL_LIB_DIR := $(INSTALL_ROOT)/lib
 
 # Determine host operating system.
 ifneq ($(wildcard /etc/debian_version),)
