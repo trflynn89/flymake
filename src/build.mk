@@ -207,7 +207,6 @@ endif
 style:
 	$(Q)clang-format -i $$(find $(SOURCE_ROOT)  \
 		-not \( -path "*extern*" -prune \) \
-		-not \( -path "*Catch2*" -prune \) \
 		-type f -name "*.h" -o -name "*.hh" -o -name "*.hpp" \
 		-o -name "*.c" -o -name "*.cc" -o -name "*.cpp" \
 		-o -name "*.m" -o -name "*.mm" \
