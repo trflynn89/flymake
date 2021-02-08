@@ -49,20 +49,24 @@ endif
 CF_ALL := -MD -MP -fPIC
 CF_ALL += -I$(SOURCE_ROOT) -I$(INSTALL_INC_DIR)
 
-# C and C++ specific flags.
-CFLAGS := -std=c2x
-CXXFLAGS := -std=c++2a
-
 ifeq ($(SYSTEM), MACOS)
     CF_ALL += -isysroot $(XCODE)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 endif
 
-# Compiler flags for Java files.
-JFLAGS :=
-
 ifeq ($(arch), x86)
     CF_ALL += -m32
 endif
+
+# C and C++ specific flags.
+CFLAGS :=
+CXXFLAGS :=
+
+# Compiler flags for Java files.
+JFLAGS :=
+
+# Language standard flags.
+CFLAGS += -std=$(cstandard)
+CXXFLAGS += -std=$(cxxstandard)
 
 # Error and warning flags.
 CF_ALL += \
