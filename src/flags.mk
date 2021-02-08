@@ -28,7 +28,7 @@
 #     JFLAGS_$(d)
 #
 # The resulting flags used when compiling a directory are the global flags defined in this file
-# followed by any  _$(d) variants defined in the directory's files.mk.
+# followed by any _$(d) variants defined in the directory's files.mk.
 
 # Remove built-in rules.
 MAKEFLAGS += --no-builtin-rules --no-print-directory
