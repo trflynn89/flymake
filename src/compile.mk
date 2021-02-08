@@ -89,9 +89,9 @@ STATIC_$$(t) := $(filter %.a,$(1))
 SHARED_$$(t) := $(filter %.$(SHARED_LIB_EXT).$(VERSION),$(1))
 
 $$(STATIC_$$(t)) $$(SHARED_$$(t)): OBJS := $$(OBJ_$$(t))
-$$(STATIC_$$(t)) $$(SHARED_$$(t)): CFLAGS := $(CFLAGS_$(d)) $(CFLAGS)
-$$(STATIC_$$(t)) $$(SHARED_$$(t)): CXXFLAGS := $(CXXFLAGS_$(d)) $(CXXFLAGS)
-$$(STATIC_$$(t)) $$(SHARED_$$(t)): LDFLAGS := $(LDFLAGS_$(d)) $(LDFLAGS)
+$$(STATIC_$$(t)) $$(SHARED_$$(t)): CFLAGS := $(CFLAGS) $(CFLAGS_$(d))
+$$(STATIC_$$(t)) $$(SHARED_$$(t)): CXXFLAGS := $(CXXFLAGS) $(CXXFLAGS_$(d))
+$$(STATIC_$$(t)) $$(SHARED_$$(t)): LDFLAGS := $(LDFLAGS) $(LDFLAGS_$(d))
 
 $$(STATIC_$$(t)): $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
