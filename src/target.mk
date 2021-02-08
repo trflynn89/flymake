@@ -45,15 +45,8 @@ ifeq ($$(TARGET_TYPE_$$(t)), BIN)
         TEST_BINARIES += $$(TARGET_FILE_$$(t))
     endif
 else ifeq ($$(TARGET_TYPE_$$(t)), LIB)
-    ifeq ($(SYSTEM), LINUX)
-        TARGET_FILE_$$(t) := $(LIB_DIR)/$$(t).so.$(VERSION)
-        TARGET_FILE_$$(t) += $(LIB_DIR)/$$(t).a
-    else ifeq ($(SYSTEM), MACOS)
-        TARGET_FILE_$$(t) := $(LIB_DIR)/$$(t).dylib.$(VERSION)
-        TARGET_FILE_$$(t) += $(LIB_DIR)/$$(t).a
-    else
-        $$(error Unrecognized system $(SYSTEM), check target.mk)
-    endif
+    TARGET_FILE_$$(t) := $(LIB_DIR)/$$(t).$(SHARED_LIB_EXT).$(VERSION)
+    TARGET_FILE_$$(t) += $(LIB_DIR)/$$(t).a
 else ifeq ($$(TARGET_TYPE_$$(t)), JAR)
     TARGET_FILE_$$(t) := $(JAR_DIR)/$$(t)-$(VERSION).jar
 else ifeq ($$(TARGET_TYPE_$$(t)), PKG)

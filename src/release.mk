@@ -2,7 +2,7 @@
 # be used to add a file to the release package, or execute a command while creating the package. If
 # none of these APIs are used, no release package will be created.
 #
-# Any shared libraries added to the release package will also include a chain of symbolic links to
+# Any shared libraries added to the release package will also include a chain of symbolic links
 # which resolve to the real, versioned library defined by the application's Makefile. For example,
 # if the Makefile defines $(VERSION) as "1.0.0" and invokes $(ADD_TARGET) for a LIB target with the
 # name "libfly", the following symbolic link chain will be created under $(INSTALL_LIB_DIR):
@@ -14,15 +14,6 @@
 
 # A literal comma.
 COMMA := ,
-
-# System-dependent shared library extension.
-ifeq ($(SYSTEM), LINUX)
-    SHARED_LIB_EXT := so
-else ifeq ($(SYSTEM), MACOS)
-    SHARED_LIB_EXT := dylib
-else
-    $(error Unknown system $(SYSTEM), check release.mk)
-endif
 
 # Build the release package.
 define BUILD_REL

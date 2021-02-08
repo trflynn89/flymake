@@ -86,7 +86,7 @@ define LIB_RULES
 MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
 
 STATIC_$$(t) := $(filter %.a,$(1))
-SHARED_$$(t) := $(filter %.so.$(VERSION) %.dylib.$(VERSION),$(1))
+SHARED_$$(t) := $(filter %.$(SHARED_LIB_EXT).$(VERSION),$(1))
 
 $$(STATIC_$$(t)) $$(SHARED_$$(t)): OBJS := $$(OBJ_$$(t))
 $$(STATIC_$$(t)) $$(SHARED_$$(t)): CFLAGS := $(CFLAGS_$(d)) $(CFLAGS)
