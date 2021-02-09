@@ -138,7 +138,7 @@ Generally, a `files.mk` file would be added to the root target path to define th
 build. Additionally, a `files.mk` file may be added to any of those subdirectories to explicitly
 declare the source files to build. The following variables may be used to define these:
 
-* `SRC_DIRS_$(d)` - The list of subdirectories (relative to `SOURCE_ROOT`) to build.
+* `SRC_DIRS_$(d)` - The list of subdirectories (relative to `d`) to build.
 * `SRC_$(d)` - The list of source files (in this directory) to build.
 
 > Note the variable `d` used here. This is a special variable that is defined just before each
@@ -180,7 +180,7 @@ The `files.mk` files should be written as follows to handle these nuances:
 
 `lib/files.mk`: (here, `d` = `/path/to/lib`)
 ```make
-SRC_DIRS_$(d) := lib/foo lib/bar
+SRC_DIRS_$(d) := $(d)/foo $(d)/bar
 SRC_$(d) := $(d)/lib.cpp
 ```
 
@@ -240,7 +240,7 @@ There is a single `files.mk` file under `src/main/java` to define the variables 
 `jar_example` target. It may contain:
 
 ```make
-SRC_DIRS_$(d) := src/main/java/com/project/example
+SRC_DIRS_$(d) := $(d)/com/project/example
 MAIN_CLASS_$(d) := com.project.example.App
 CLASS_PATH_$(d) := $(d)/../../../lib/com/third_party/library/library.jar
 RESOURCES_$(d) := $(d)/../resources/images

@@ -1,4 +1,4 @@
 SRC_DIRS_$(d) := \
-    jar/src/main/java/com/libfly/example
+    $(d)/com/flymake/example
 
-MAIN_CLASS_$(d) := com.libfly.example.App
+MAIN_CLASS_$(d) := com.flymake.example.App
