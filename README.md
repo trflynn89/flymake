@@ -262,13 +262,13 @@ The following options may be specified to configure the build:
 | Option        | Accepted Values               | Default Value                 | Description |
 | :--           | :--                           | :--                           | :--         |
 | `output`      | Any directory                 | `CURDIR`                      | Build artifact directory (see [Build artifacts](#build-artifacts)). |
-| `toolchain`   | `clang`, `gcc`                | `clang`                       | Compilation toolchain for C-family targets. |
-| `mode`        | `debug`, `release`, `profile` | `debug`                       | Compilation mode (see (1) below). |
+| `toolchain`   | `clang`, `gcc`, `none`        | `clang`                       | Compilation toolchain for C-family targets (see (1) below). |
+| `mode`        | `debug`, `release`, `profile` | `debug`                       | Compilation mode (see (2) below). |
 | `arch`        | `x86`, `x64`                  | Defaults to host architecture | Compilation architecture, 32-bit or 64-bit. |
-| `strict`      | `0`, `1`, `2`                 | `2`                           | Compiler warning level (see (2) below). |
+| `strict`      | `0`, `1`, `2`                 | `2`                           | Compiler warning level (see (3) below). |
 | `cstandard`   | See description               | `c2x`                         | The language standard to use for C files, passed directly to `-std`. |
 | `cxxstandard` | See description               | `c++2a`                       | The language standard to use for C++ files, passed directly to `-std`. |
-| `cacher`      | See description               | None                          | Enable use of a compilation cache (see (3) below). |
+| `cacher`      | See description               | None                          | Enable use of a compilation cache (see (4) below). |
 | `stylized`    | `0`, `1`                      | `1`                           | Enable pretty build output. |
 | `verbose`     | `0`, `1`                      | `0`                           | Enable verbose build output. |
 
@@ -276,7 +276,16 @@ These options make be specified either via the command line (e.g. `make mode=rel
 setting them in the main Makefile before importing `build.mk`. The latter allows for changing the
 defaults for the project.
 
-1. Compilation mode changes the build flags used to build source files:
+1. flymake supports GCC and Clang toolchains out of the box, and will use Clang by default. Other
+   toolchains have not been tested, but may be used by setting `toolchain=none`. If this is set,
+   you must also define the following:
+
+    * `CC` - Compiler for C files.
+    * `CXX` - Compiler for C++ files.
+    * `AR` - Archive tool for creating static libraries.
+    * `STRIP` - Strip tool for discarding symbols from build artifacts.
+
+2. Compilation mode changes the build flags used to build source files:
 
     * `debug` - Debugging symbols and code coverage instrumentation are added to compiled sources.
       For C-family targets, AddressSanitizer and UndefinedBehaviorSanitizer are enabled.
@@ -284,7 +293,7 @@ defaults for the project.
     * `profile` - Builds are optimized and profiling symbols are added for generation of profile
       reports. Currently only supported if the `toolchain` is `gcc`.
 
-2. By default, flymake enables a strict set of compiler warnings. This may not be desired for all
+3. By default, flymake enables a strict set of compiler warnings. This may not be desired for all
    projects, so the warning level may be globablly reduced or disabled. For locally amending warning
    flags, see [Advanced build configuration](#advanced-build-configuration). The warning levels are:
 
@@ -292,7 +301,7 @@ defaults for the project.
    * `1` - Enable `-Wall -Wextra -Werror`.
    * `2` - Enable `-pedantic` and more. See [flags.mk](src/flags.mk) for all warnings that are set.
 
-3. By default, a compilation cache is not used. If you would like to use a compilation cache, set
+4. By default, a compilation cache is not used. If you would like to use a compilation cache, set
    `cacher` to the cache binary to use (e.g. `cacher=ccache`).
 
 ## Build artifacts
