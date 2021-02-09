@@ -2,7 +2,7 @@
 SOURCE_ROOT := $(CURDIR)
 
 # Define the project version.
-VERSION := 1.4.0
+VERSION := 1.4.1
 
 # Import the build API.
 include $(SOURCE_ROOT)/src/api.mk
