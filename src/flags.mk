@@ -69,58 +69,60 @@ CFLAGS += -std=$(cstandard)
 CXXFLAGS += -std=$(cxxstandard)
 
 # Error and warning flags.
-CF_ALL += \
-    -Wall \
-    -Wextra \
-    \
-    -Werror \
-    \
-    -Wcast-align \
-    -Wcast-qual \
-    -Wdisabled-optimization \
-    -Wfloat-equal \
-    -Winvalid-pch \
-    -Wmissing-declarations \
-    -Wpointer-arith \
-    -Wredundant-decls \
-    -Wshadow \
-    -Wstrict-overflow=2 \
-    -Wundef \
-    -Wunreachable-code \
-    -Wunused \
-    \
-    -pedantic
-
-CXXFLAGS += \
-    -Wctor-dtor-privacy \
-    -Wnon-virtual-dtor \
-    -Wold-style-cast \
-    -Woverloaded-virtual \
-
-# Disabled due to LLVM bug: https://bugs.llvm.org/show_bug.cgi?id=44325
-#    -Wzero-as-null-pointer-constant \
-
-ifeq ($(mode), debug)
+ifneq ($(strict), 0)
     CF_ALL += \
-        -Winline
-endif
+        -Wall \
+        -Wextra \
+        -Werror
 
-ifeq ($(toolchain), clang)
-    CF_ALL += \
-        -Wnewline-eof \
-        -Wsign-conversion
-else ifeq ($(toolchain), gcc)
-    CF_ALL += \
-        -Wlogical-op \
-        -Wnull-dereference \
-        -Wredundant-decls
+    ifneq ($(strict), 1)
+        CF_ALL += \
+            -pedantic \
+            -Wcast-align \
+            -Wcast-qual \
+            -Wdisabled-optimization \
+            -Wfloat-equal \
+            -Winvalid-pch \
+            -Wmissing-declarations \
+            -Wpointer-arith \
+            -Wredundant-decls \
+            -Wshadow \
+            -Wstrict-overflow=2 \
+            -Wundef \
+            -Wunreachable-code \
+            -Wunused \
 
-    CXXFLAGS += -Wsuggest-override
-
-    ifeq ($(mode), debug)
         CXXFLAGS += \
-            -Wsuggest-final-methods \
-            -Wsuggest-final-types
+            -Wctor-dtor-privacy \
+            -Wnon-virtual-dtor \
+            -Wold-style-cast \
+            -Woverloaded-virtual \
+
+        # Disabled due to LLVM bug: https://bugs.llvm.org/show_bug.cgi?id=44325
+        #    -Wzero-as-null-pointer-constant \
+
+        ifeq ($(mode), debug)
+            CF_ALL += -Winline
+        endif
+
+        ifeq ($(toolchain), clang)
+            CF_ALL += \
+                -Wnewline-eof \
+                -Wsign-conversion
+        else ifeq ($(toolchain), gcc)
+            CF_ALL += \
+                -Wlogical-op \
+                -Wnull-dereference \
+                -Wredundant-decls
+
+            CXXFLAGS += -Wsuggest-override
+
+            ifeq ($(mode), debug)
+                CXXFLAGS += \
+                    -Wsuggest-final-methods \
+                    -Wsuggest-final-types
+            endif
+        endif
     endif
 endif
 

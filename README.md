@@ -264,20 +264,30 @@ The following command-line options may be specified when running `make` to confi
 | `toolchain`   | `clang`, `gcc`                | `clang`                       | Compilation toolchain for C-family targets. |
 | `mode`        | `debug`, `release`, `profile` | `debug`                       | Compilation mode (see (1) below). |
 | `arch`        | `x86`, `x64`                  | Defaults to host architecture | Compilation architecture, 32-bit or 64-bit. |
-| `cstandard`   | See description               | `c2x`                         | The language standard to use for C files, passed to `-std`. |
-| `cxxstandard` | See description               | `c++2a`                       | The language standard to use for C++ files, passed to `-std`. |
-| `cacher`      | See description               | None                          | Enable use of a compilation cache (see (2) below). |
+| `strict`      | `0`, `1`, `2`                 | `2`                           | Compiler warning level (see (2) below). |
+| `cstandard`   | See description               | `c2x`                         | The language standard to use for C files, passed directly to `-std`. |
+| `cxxstandard` | See description               | `c++2a`                       | The language standard to use for C++ files, passed directly to `-std`. |
+| `cacher`      | See description               | None                          | Enable use of a compilation cache (see (3) below). |
 | `stylized`    | `0`, `1`                      | `1`                           | Enable pretty build output. |
 | `verbose`     | `0`, `1`                      | `0`                           | Enable verbose build output. |
 
 1. Compilation mode changes the build flags used to build source files:
+
     * `debug` - Debugging symbols and code coverage instrumentation are added to compiled sources.
       For C-family targets, AddressSanitizer and UndefinedBehaviorSanitizer are enabled.
     * `release` - Builds are optimized and all debugging information is removed.
     * `profile` - Builds are optimized and profiling symbols are added for generation of profile
       reports. Currently only supported if the `toolchain` is `gcc`.
 
-2. By default, a compilation cache is not used. If you would like to use a compilation cache, set
+2. By default, flymake enables a strict set of compiler warnings. This may not be desired for all
+   projects, so the warning level may be globablly reduced or disabled. For locally amending warning
+   flags, see [Advanced build configuration](#advanced-build-configuration). The warning levels are:
+
+   * `0` - Disable all warnings.
+   * `1` - Enable `-Wall -Wextra -Werror`.
+   * `2` - Enable `-pedantic` and more. See [flags.mk](src/flags.mk) for all warnings that are set.
+
+3. By default, a compilation cache is not used. If you would like to use a compilation cache, set
    `cacher` to the cache binary to use (e.g. `cacher=ccache`).
 
 ## Build artifacts
@@ -340,14 +350,8 @@ script created into `$(INSTALL_ROOT)/bin/uninstall_$(target name)` to remove the
 
 ## Advanced build configuration
 
-flymake is currently quite opionated about setting strict compiler warnings for C-family targets. It
-sets `-Wall -Wextra -pedantic`, and more, for all files. Further, it sets `-Werror` so that any
-warning results in a compiler error. This may not be desired for all projects, so a TODO for flymake
-is to easily allow opting out of these settings. See [flags.mk](src/flags.mk) for all compiler
-warnings and options that are set.
-
-However, each `files.mk` file may specify compiler and linker flags to be applied to files in that
-directory. The following variables may be defined:
+Each `files.mk` file may specify compiler and linker flags to be applied to files in that directory.
+The following variables may be defined:
 
 * `CFLAGS_$(d)` - Compiler flags for C and Objective-C files.
 * `CXXFLAGS_$(d)` - Compiler flags for C++ and Objective-C++ files.
@@ -364,6 +368,3 @@ each subdirectory does not also need to update the include path.
 
 The resulting flags used when compiling and linking files in a directory are the global flags
 defined in `flags.mk` followed by any of the per-directory variants listed above.
-
-Until opt-out of strict warnings is provided, this mechanism may be used to selectively disable
-warnings or disable all warnings (`-w`).
