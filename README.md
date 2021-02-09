@@ -180,7 +180,7 @@ files.
 
 ### Java example
 
-Warning: Java support with flymake is currently experimental and rudimentary. It is subject to
+> Warning: Java support with flymake is currently experimental and rudimentary. It is subject to
 change at any time. Currently, only executable JAR files may be created.
 
 Just like with C-family targets, Java targets use `files.mk` files to define variables required to
@@ -262,13 +262,13 @@ The following options may be specified to configure the build:
 | Option        | Accepted Values               | Default Value                 | Description |
 | :--           | :--                           | :--                           | :--         |
 | `output`      | Any directory                 | `CURDIR`                      | Build artifact directory (see [Build artifacts](#build-artifacts)). |
-| `toolchain`   | `clang`, `gcc`, `none`        | `clang`                       | Compilation toolchain for C-family targets (see (1) below). |
-| `mode`        | `debug`, `release`, `profile` | `debug`                       | Compilation mode (see (2) below). |
+| `toolchain`   | `clang`, `gcc`, `none`        | `clang`                       | Compilation toolchain for C-family targets<sup>1</sup>. |
+| `mode`        | `debug`, `release`, `profile` | `debug`                       | Compilation mode<sup>2</sup>. |
 | `arch`        | `x86`, `x64`                  | Defaults to host architecture | Compilation architecture, 32-bit or 64-bit. |
-| `strict`      | `0`, `1`, `2`                 | `2`                           | Compiler warning level (see (3) below). |
+| `strict`      | `0`, `1`, `2`                 | `2`                           | Compiler warning level<sup>3</sup>. |
 | `cstandard`   | See description               | `c2x`                         | The language standard to use for C files, passed directly to `-std`. |
 | `cxxstandard` | See description               | `c++2a`                       | The language standard to use for C++ files, passed directly to `-std`. |
-| `cacher`      | See description               | None                          | Enable use of a compilation cache (see (4) below). |
+| `cacher`      | See description               | None                          | Enable use of a compilation cache<sup>4</sup>. |
 | `stylized`    | `0`, `1`                      | `1`                           | Enable pretty build output. |
 | `verbose`     | `0`, `1`                      | `0`                           | Enable verbose build output. |
 
