@@ -22,6 +22,15 @@ cstandard ?= c2x
 # C++ language standard.
 cxxstandard ?= c++2a
 
+# Sanitizers (AddressSanitizer, UndefinedBehaviorSanitizer) to enable.
+ifeq ($(mode), debug)
+    ifeq ($(arch), x64)
+        sanitize ?= address,undefined
+    else
+        sanitize ?= address
+    endif
+endif
+
 # Compile caching system.
 cacher ?=
 

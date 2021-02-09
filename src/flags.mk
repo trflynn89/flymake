@@ -130,17 +130,11 @@ JFLAGS += \
     -Werror \
     -Xlint
 
-# Add debug symbols & use sanitizers for debug builds, optimize release builds, and add profiling
+# Add debug and coverage symbols for debug builds, optimize release builds, and add profiling
 # symbols for profile builds.
 ifeq ($(mode), debug)
-    CF_ALL += -O0 -g -fno-omit-frame-pointer
+    CF_ALL += -O0 -g
     JFLAGS += -g:lines,vars,source
-
-    ifeq ($(arch), x64)
-        CF_ALL += -fsanitize=address,undefined -fno-sanitize-recover=all
-    else
-        CF_ALL += -fsanitize=address
-    endif
 
     ifeq ($(toolchain), clang)
         CF_ALL += -fprofile-instr-generate -fcoverage-mapping
@@ -157,6 +151,11 @@ else ifeq ($(mode), profile)
     else
         $(error Profiling not supported with toolchain $(toolchain), check flags.mk)
     endif
+endif
+
+# Enable sanitizers.
+ifneq ($(sanitize),)
+    CF_ALL += -fsanitize=$(sanitize) -fno-omit-frame-pointer -fno-sanitize-recover=all
 endif
 
 CFLAGS += $(CF_ALL)
