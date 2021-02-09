@@ -2,31 +2,31 @@
 # options are listed here for convenience.
 
 # Compilation toolchain (clang, gcc) for C-family targets.
-toolchain := clang
+toolchain ?= clang
 
 # Compilation mode (debug, release, profile).
-mode := debug
+mode ?= debug
 
 # Build 32-bit or 64-bit target.
-arch := $(arch)
+arch ?= $(arch)
 
 # Default compiler warning level (0, 1, 2).
-strict := 2
+strict ?= 2
 
 # C language standard.
-cstandard = c2x
+cstandard ?= c2x
 
 # C++ language standard.
-cxxstandard = c++2a
+cxxstandard ?= c++2a
 
 # Compile caching system.
-cacher :=
+cacher ?=
 
 # Enable stylized build output.
-stylized := 1
+stylized ?= 1
 
 # Enable verbose builds.
-verbose := 0
+verbose ?= 0
 
 # Define the toolchain binaries.
 ifeq ($(toolchain), clang)
