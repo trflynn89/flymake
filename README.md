@@ -281,9 +281,10 @@ The following options may be specified to configure the build:
 | `mode`        | `debug`, `release`, `profile` | `debug`                       | Compilation mode<sup>2</sup>. |
 | `arch`        | `x86`, `x64`                  | Defaults to host architecture | Compilation architecture, 32-bit or 64-bit. |
 | `strict`      | `0`, `1`, `2`                 | `2`                           | Compiler warning level<sup>3</sup>. |
-| `cstandard`   | See description               | `c2x`                         | The language standard to use for C files, passed directly to `-std`. |
-| `cxxstandard` | See description               | `c++2a`                       | The language standard to use for C++ files, passed directly to `-std`. |
-| `cacher`      | See description               | None                          | Enable use of a compilation cache<sup>4</sup>. |
+| `cstandard`   | Any valid `-std` option       | `c2x`                         | The language standard to use for C files, passed directly to `-std`. |
+| `cxxstandard` | Any valid `-std` option       | `c++2a`                       | The language standard to use for C++ files, passed directly to `-std`. |
+| `sanitize`    | Any valid `-fsanitize` option | See description               | The sanitizers to enable, passed directly to `-fsanitize`<sup>4</sup>. |
+| `cacher`      | See description               | None                          | Enable use of a compilation cache<sup>5</sup>. |
 | `stylized`    | `0`, `1`                      | `1`                           | Enable pretty build output. |
 | `verbose`     | `0`, `1`                      | `0`                           | Enable verbose build output. |
 
@@ -291,33 +292,37 @@ These options make be specified either via the command line (e.g. `make mode=rel
 setting them in the main Makefile before importing `build.mk`. The latter allows for changing the
 defaults for the project.
 
-1. flymake supports GCC and Clang toolchains out of the box, and will use Clang by default. Other
-   toolchains have not been tested, but may be used by setting `toolchain=none`. If this is set,
-   you must also define the following:
+<sup>1</sup> flymake supports GCC and Clang toolchains and will use Clang by default. Other
+toolchains have not been tested, but may be used by setting `toolchain=none`. If this is set, you
+should also define the following:
 
-    * `CC` - Compiler for C files.
-    * `CXX` - Compiler for C++ files.
-    * `AR` - Archive tool for creating static libraries.
-    * `STRIP` - Strip tool for discarding symbols from build artifacts.
+* `CC` - Compiler for C files.
+* `CXX` - Compiler for C++ files.
+* `AR` - Archive tool for creating static libraries.
+* `STRIP` - Strip tool for discarding symbols from build artifacts.
 
-2. Compilation mode changes the build flags used to build source files:
+<sup>2</sup> Compilation mode changes the build flags used to build source files:
 
-    * `debug` - Debugging symbols and code coverage instrumentation are added to compiled sources.
-      For C-family targets, AddressSanitizer and UndefinedBehaviorSanitizer are enabled.
-    * `release` - Builds are optimized and all debugging information is removed.
-    * `profile` - Builds are optimized and profiling symbols are added for generation of profile
-      reports. Currently only supported if the `toolchain` is `gcc`.
+* `debug` - Debugging symbols and code coverage instrumentation are added to compiled sources.
+* `release` - Builds are optimized and all debugging information is removed.
+* `profile` - Builds are optimized and profiling symbols are added for generation of profile
+  reports. Currently only supported if the `toolchain` is `gcc`.
 
-3. By default, flymake enables a strict set of compiler warnings. This may not be desired for all
-   projects, so the warning level may be globablly reduced or disabled. For locally amending warning
-   flags, see [Advanced build configuration](#advanced-build-configuration). The warning levels are:
+<sup>3</sup> By default, flymake enables a strict set of compiler warnings. This may not be desired
+for all projects, so the warning level may be globablly reduced or disabled. For locally amending
+warning flags, see [Advanced build configuration](#advanced-build-configuration). The warning levels
+are:
 
-   * `0` - Disable all warnings.
-   * `1` - Enable `-Wall -Wextra -Werror`.
-   * `2` - Enable `-pedantic` and more. See [flags.mk](src/flags.mk) for all warnings that are set.
+* `0` - Disable all warnings.
+* `1` - Enable `-Wall -Wextra -Werror`.
+* `2` - Enable `-pedantic` and more. See [flags.mk](src/flags.mk) for all warnings that are set.
 
-4. By default, a compilation cache is not used. If you would like to use a compilation cache, set
-   `cacher` to the cache binary to use (e.g. `cacher=ccache`).
+<sup>4</sup> By default, flymake will enable AddressSanitizer and UndefinedBehaviorSanitizer for x64
+debug builds, and just AddressSanitizer for x86 debug builds (UndefinedBehaviorSanitizer is not
+enabled for x86 by default because some Clang versions aren't able to link).
+
+<sup>5</sup> By default, a compilation cache is not used. If you would like to use a compilation
+cache, set `cacher` to the cache binary to use (e.g. `cacher=ccache`).
 
 ## Build artifacts
 
