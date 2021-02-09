@@ -10,6 +10,9 @@ mode := debug
 # Build 32-bit or 64-bit target.
 arch := $(arch)
 
+# Default compiler warning level (0, 1, 2).
+strict := 2
+
 # C language standard.
 cstandard = c2x
 
@@ -59,6 +62,13 @@ SUPPORTED_MODES := debug release profile
 
 ifneq ($(mode), $(filter $(SUPPORTED_MODES), $(mode)))
     $(error Compilation mode $(mode) not supported, check config.mk)
+endif
+
+# Validate the provided compiler warning level.
+SUPPORTED_STRICTNESS := 0 1 2
+
+ifneq ($(strict), $(filter $(SUPPORTED_STRICTNESS), $(strict)))
+    $(error Compilation strictness level $(strict) not supported, check config.mk)
 endif
 
 # Use a compiler cache if requested.
