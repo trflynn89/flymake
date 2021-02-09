@@ -56,10 +56,10 @@ $(eval $(call ADD_TARGET, [target name], [target path], [target type], [target d
 * Target path - The path, relative to `SOURCE_ROOT`, to the root directory containing the source
   files for this target.
 * Target type - One of `BIN`, `LIB`, `JAR`, or `TEST`:
-    * `BIN` - The target is an executable binary compiled from C-family sources. The executable's name
-      will be the target name.
-    * `LIB` - The target is a library compiled from C-family sources. Both static and shared libraries
-      will be created.
+    * `BIN` - The target is an executable binary compiled from C-family sources. The executable's
+      name will be the target name.
+    * `LIB` - The target is a library compiled from C-family sources. Both static and shared
+      libraries will be created.
     * `JAR` - The target is an executable JAR file compiled from Java sources.
     * `TEST` - An alias for `BIN` for unit testing targets.
 * Target dependencies (optional) - If this target depends on other, previously defined targets in
@@ -242,8 +242,8 @@ The following primary goals are defined by flymake:
 * `clean` - Remove the artifact directory for the current build configuration (see
   [Build configuration](#build-configuration)).
 * `tests` - Run all unit tests defined in the Makefile with the `TEST` target type.
-* `install` - Extract any target installation package created during the build in the file system
-  root directory (see [Release packages](#release-packages)).
+* `install` - Extract any target release package created during the build in the file system root
+  directory (see [Release packages](#release-packages)).
 
 The following secondary goals are defined by flymake to aid in development:
 
@@ -261,6 +261,7 @@ The following options may be specified to configure the build:
 
 | Option        | Accepted Values               | Default Value                 | Description |
 | :--           | :--                           | :--                           | :--         |
+| `output`      | Any directory                 | `CURDIR`                      | Build artifact directory (see [Build artifacts](#build-artifacts)). |
 | `toolchain`   | `clang`, `gcc`                | `clang`                       | Compilation toolchain for C-family targets. |
 | `mode`        | `debug`, `release`, `profile` | `debug`                       | Compilation mode (see (1) below). |
 | `arch`        | `x86`, `x64`                  | Defaults to host architecture | Compilation architecture, 32-bit or 64-bit. |
@@ -296,24 +297,25 @@ defaults for the project.
 
 ## Build artifacts
 
-All build artifacts are created under a hierarchy of subdirectories next to the Makefile that
-defines the targets. That hierarchy is controlled by the build configuration.
+All build artifacts are created under a hierarchy of subdirectories under the directory specified by
+the `output` option (which defaults to the directory of the main Makefile). That hierarchy is
+controlled by other build configuration options.
 
-* C-family targets - The artifacts will appear in the path `$(mode)/$(toolchain)/$(arch)`; with the
-  default options listed above, the default path will be `debug/clang/x64` on 64-bit hosts. The
-  following subdirectories will be created as needed by the build:
+* C-family targets - The artifacts will appear in the path `$(output)/$(mode)/$(toolchain)/$(arch)`;
+  with the default options listed above, the default path will be `$(CURDIR)/debug/clang/x64` on
+  64-bit hosts. The following subdirectories will be created as needed by the build:
 
     * `bin` - Contains executable files created for `BIN` and `TEST` targets.
     * `lib` - Contains static and shared library files created for `LIB` targets.
     * `obj` - Contains intermediate object (`.o`) and dependency (`.d`) files compiled from source
       files.
     * `etc` - Contains any extra files created during the build or by one of the secondary Make
-      goals, such as code coverage and profile reports. Also contains any installation package
-      created during the build (see [Release packages](#release-packages)).
+      goals, such as code coverage and profile reports. Also contains any release package created
+      during the build (see [Release packages](#release-packages)).
 
-* Java targets - The artifacts will appear in the path `$(mode)/javac`; with the default options
-  listed above, the default path will be `debug/javac`. The following subdirectories will be created
-  as needed by the build:
+* Java targets - The artifacts will appear in the path `$(output)/$(mode)/javac`; with the default
+  options listed above, the default path will be `$(CURDIR)/debug/javac`. The following
+  subdirectories will be created as needed by the build:
 
     * `bin` - Contains executable JAR files created for `JAR` targets.
     * `classes` - Contains intermediate class (`.class`) files compiled from source files. Class

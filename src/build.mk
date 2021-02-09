@@ -41,7 +41,7 @@ include $(BUILD_ROOT)/target.mk
 
 # Clean up output files.
 clean:
-	@echo -e "[$(RED)Clean$(DEFAULT) $(subst $(CURDIR)/,,$(OUT_DIR))]"
+	@echo -e "[$(RED)Clean$(DEFAULT) $(mode)]"
 	$(Q)$(RM) -r $(OUT_DIR)
 
 # Run all unit tests.

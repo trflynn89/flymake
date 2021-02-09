@@ -1,6 +1,9 @@
 # Define the default make configuration. Not all defaults are defined here, but all command line
 # options are listed here for convenience.
 
+# Build artifact directory.
+output ?= $(CURDIR)
+
 # Compilation toolchain (clang, gcc) for C-family targets.
 toolchain ?= clang
 
@@ -10,7 +13,7 @@ mode ?= debug
 # Build 32-bit or 64-bit target.
 arch ?= $(arch)
 
-# Default compiler warning level (0, 1, 2).
+# Compiler warning level (0, 1, 2).
 strict ?= 2
 
 # C language standard.
@@ -78,7 +81,7 @@ ifneq ($(cacher), )
 endif
 
 # Define the output directories.
-OUT_DIR := $(CURDIR)/$(mode)
+OUT_DIR := $(output)/$(mode)
 
 CXX_DIR := $(OUT_DIR)/$(toolchain)/$(arch)
 BIN_DIR := $(CXX_DIR)/bin
@@ -90,7 +93,7 @@ JAVA_DIR := $(OUT_DIR)/$(JAVAC)
 JAR_DIR := $(JAVA_DIR)/bin
 CLASS_DIR := $(JAVA_DIR)/classes
 
-PKG_DIR := $(CURDIR)/out
+PKG_DIR := $(output)/out
 
 # ANSI escape sequences to use in stylized builds.
 ifeq ($(stylized), 1)
