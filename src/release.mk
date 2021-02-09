@@ -12,9 +12,6 @@
 # The release package will also include an uninstall script with a simple $(RM) command to remove
 # all files included in the release package.
 
-# A literal comma.
-COMMA := ,
-
 # Build the release package.
 define BUILD_REL
 
@@ -92,6 +89,7 @@ $(eval $(call ADD_REL_CMD, $(STRIP) $(STRIP_FLAGS) $(REL_BIN_DIR_$(t))/$(t)))
 $(eval $(call ADD_REL_CMD, chmod 755 $(REL_BIN_DIR_$(t))/$(t)))
 
 REL_UNINSTALL_$(t) += $(REL_BIN_DIR_$(t))/$(t)
+REL_FILES_$(t) += $(BIN_DIR)/$(t)
 
 endef
 
@@ -104,6 +102,8 @@ $(eval $(call ADD_REL_CMD, cp -f $(LIB_DIR)/$(t).$(SHARED_LIB_EXT).$(VERSION) $(
 $(eval $(call ADD_REL_CMD, $(STRIP) $(STRIP_FLAGS) $(REL_LIB_DIR_$(t))/$(t).*))
 
 REL_UNINSTALL_$(t) += $(REL_LIB_DIR_$(t))/$(t).*
+REL_FILES_$(t) += $(LIB_DIR)/$(t).a
+REL_FILES_$(t) += $(LIB_DIR)/$(t).$(SHARED_LIB_EXT).$(VERSION)
 
 endef
 
@@ -115,9 +115,8 @@ endef
 define ADD_REL_INC
 
 $(eval $(call SET_REL_VAR, $(t)))
-$(eval $(call ADD_REL_CMD, \
-    rsync -am --include='$(strip $(2))' -f 'hide$(COMMA)! */' \
-    $(1)/ $(REL_INC_DIR_$(t))/$(strip $(3))))
+$(foreach f, $(call RECURSIVE_WILDCARD, $(1), $(2)), \
+    $(eval $(call ADD_REL_FILE_IMPL, $(1), $(REL_INC_DIR_$(t))/$(strip $(3)))))
 
 REL_UNINSTALL_$(t) += $(REL_INC_DIR_$(t))/$(strip $(3))
 
@@ -131,10 +130,32 @@ endef
 define ADD_REL_SRC
 
 $(eval $(call SET_REL_VAR, $(t)))
-$(eval $(call ADD_REL_CMD, \
-    rsync -am --include='$(strip $(2))' -f 'hide$(COMMA)! */' \
-    $(1)/ $(REL_SRC_DIR_$(t))/$(strip $(3))))
+$(foreach f, $(call RECURSIVE_WILDCARD, $(1), $(2)), \
+    $(eval $(call ADD_REL_FILE_IMPL, $(1), $(REL_SRC_DIR_$(t))/$(strip $(3)))))
 
 REL_UNINSTALL_$(t) += $(REL_SRC_DIR_$(t))/$(strip $(3))
 
 endef
+
+# Helper to add a single file to the release package. The caller should define $(f), the path to the
+# file to copy.
+#
+# $(1) = The path to the directory that was searched to find this file.
+# $(2) = Source file destination.
+define ADD_REL_FILE_IMPL
+
+REL_OUT_$(f) := $(dir $(strip $(2))$(subst $(strip $(1)),,$(f)))
+
+$$(eval $$(call ADD_REL_CMD, mkdir -p $$(REL_OUT_$(f))))
+$$(eval $$(call ADD_REL_CMD, cp -fp $(f) $$(REL_OUT_$(f))))
+
+REL_FILES_$(t) += $(f)
+
+endef
+
+# Wrapper around $(wildcard) to recursively find files of a given extension.
+#
+# $(1) = The path to the directory to search.
+# $(2) = File extension to search for.
+RECURSIVE_WILDCARD = $(foreach d, $(wildcard $(1:=/*)), \
+    $(call RECURSIVE_WILDCARD, $d, $2) $(filter $(subst *, %, $2), $d))

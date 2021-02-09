@@ -12,7 +12,6 @@ RUN apt-get update && \
         curl \
         lcov \
         make \
-        rsync \
         sudo \
     && \
     \
