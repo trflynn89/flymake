@@ -1,5 +1,5 @@
 # Define make goals for compiling for all supported target types and the intermediate files they
-# require. Each target source directory added via $(ADD_TARGET) must contain a file called files.mk.
+# require. Each target source directory added via $(ADD_TARGET) may contain a file called files.mk.
 # The contents expected of that file depend on the target type. This files.mk file is also where
 # the APIs defined in release.mk may be used to create an archived release package.
 #
@@ -12,7 +12,7 @@
 #
 # The files.mk for all target types may contain:
 #
-#     SRC_DIRS_$(d) = The source directories relative to $(SOURCE_ROOT) to include in the build.
+#     SRC_DIRS_$(d) = The source directories relative to $(d) to include in the build.
 #     SRC_$(d) = The sources in this directory to build.
 #
 # The files.mk for target type JAR may additionally contain:
@@ -22,9 +22,7 @@
 #     RESOURCES_$(d) = The paths to any runtime resources to include in the executable JAR.
 #
 # Each directory added to $(SRC_DIRS_$(d)) may optionally contain a files.mk file to define
-# variables specific to that directory:
-#
-#     SRC_$(d) = The sources in this directory to build.
+# variables specific to that directory.
 #
 # If a directory in $(SRC_DIRS_$(d)) does not contain a files.mk file, then $(SRC_$(d)) defaults to
 # every source file in that directory.
@@ -344,6 +342,9 @@ else
 endif
 
 $$(eval $$(call OBJ_OUT_FILES, $$(SRC_$$(d))))
+
+# Include the source directories.
+$$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $$(dir))))
 
 # Define the compile rules.
 $$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d))))
