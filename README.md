@@ -2,8 +2,8 @@
 
 [![Build Status](https://dev.azure.com/trflynn89/libfly/_apis/build/status/trflynn89.flymake?branchName=main)](https://dev.azure.com/trflynn89/libfly/_build/latest?definitionId=6&branchName=main)
 
-flymake is a parallel, non-recusrive GNU Makefile system for C/C++/Java projects. The goal is to
-provide a system that is simple to use, requires minimal boilerplate, and produces fast builds.
+flymake is a parallel, non-recusrive GNU Makefile system for C-family and Java projects. The goal is
+to provide a system that is simple to use, requires minimal boilerplate, and produces fast builds.
 
 ## Installation
 
@@ -31,6 +31,21 @@ make INSTALL_ROOT=$HOME install
 ```
 
 This will install flymake into your home directory (`~/src/fly/` and `~/bin/uninstall_flymake`).
+
+## Supported languages
+
+The following languages and file extensions are supported by flymake:
+
+| Language      | Supported File Extensions |
+| :--           | :--                       |
+| C             | `.c`                      |
+| C++           | `.cc`, `.cpp`             |
+| Objective-C   | `.m`                      |
+| Objective-C++ | `.mm`                     |
+| Java          | `.java`                   |
+
+Note: header file extensions aren't important for compilation, but for some secondary make goals
+(see [Make goals](#make-goals)), the following header extensions are supported: `.h`, `.hh`, `.hpp`.
 
 ## Usage
 
