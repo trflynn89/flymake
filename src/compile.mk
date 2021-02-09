@@ -145,28 +145,27 @@ endef
 
 # Define the make goal to generate an archived release package.
 #
-# $(1) = The path to the target output files.
-# $(2) = The path to the target release package.
+# $(1) = The path to the target release package.
 define PKG_RULES
 
 ifeq ($$(REL_CMDS_$$(t)),)
 
-$(2):
+$(1):
 
 else
 
-MAKEFILES_$(d) := $(BUILD_ROOT)/*.mk
+MAKEFILES_$(d) := $(BUILD_ROOT)/release.mk $(wildcard $(d)/*.mk)
 
-$(2): REL_CMDS := $$(REL_CMDS_$$(t))
-$(2): REL_NAME := $$(REL_NAME_$$(t))
-$(2): ETC_TMP_DIR := $$(ETC_TMP_DIR_$$(t))
-$(2): REL_BIN_DIR := $$(REL_BIN_DIR_$$(t))
-$(2): REL_LIB_DIR := $$(REL_LIB_DIR_$$(t))
-$(2): REL_INC_DIR := $$(REL_INC_DIR_$$(t))
-$(2): REL_SRC_DIR := $$(REL_SRC_DIR_$$(t))
-$(2): REL_UNINSTALL := $$(REL_UNINSTALL_$$(t))
+$(1): REL_CMDS := $$(REL_CMDS_$$(t))
+$(1): REL_NAME := $$(REL_NAME_$$(t))
+$(1): ETC_TMP_DIR := $$(ETC_TMP_DIR_$$(t))
+$(1): REL_BIN_DIR := $$(REL_BIN_DIR_$$(t))
+$(1): REL_LIB_DIR := $$(REL_LIB_DIR_$$(t))
+$(1): REL_INC_DIR := $$(REL_INC_DIR_$$(t))
+$(1): REL_SRC_DIR := $$(REL_SRC_DIR_$$(t))
+$(1): REL_UNINSTALL := $$(REL_UNINSTALL_$$(t))
 
-$(2): $(1) $$(MAKEFILES_$(d))
+$(1): $$(MAKEFILES_$(d)) $$(REL_FILES_$$(t))
 	$(Q)$$(BUILD_REL)
 
 endif
@@ -256,7 +255,7 @@ $$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $$(dir))))
 
 # Define the compile rules.
 $$(eval $$(call BIN_RULES, $(2), $(4)))
-$$(eval $$(call PKG_RULES, $(2), $(3)))
+$$(eval $$(call PKG_RULES, $(3)))
 $$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d))))
 
 # Include dependency files.
@@ -291,7 +290,7 @@ $$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $$(dir))))
 
 # Define the compile rules.
 $$(eval $$(call LIB_RULES, $(2)))
-$$(eval $$(call PKG_RULES, $(2), $(3)))
+$$(eval $$(call PKG_RULES, $(3)))
 $$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d))))
 
 # Include dependency files.
@@ -322,7 +321,7 @@ $$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_JAVA_RULES, $$(dir)))
 
 # Define the compile rules.
 $$(eval $$(call JAR_RULES, $(2), $$(MAIN_CLASS_$$(d))))
-$$(eval $$(call PKG_RULES, $(2), $(3)))
+$$(eval $$(call PKG_RULES, $(3)))
 
 # Pop the current directory from the stack.
 $$(eval $$(call POP_DIR))
@@ -393,7 +392,7 @@ $$(eval $$(call PUSH_DIR, $(1)))
 include $$(d)/files.mk
 
 # Define the packaging rules.
-$$(eval $$(call PKG_RULES, $(2), $(3)))
+$$(eval $$(call PKG_RULES, $(3)))
 
 # Pop the current directory from the stack.
 $$(eval $$(call POP_DIR))
