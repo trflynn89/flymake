@@ -8,9 +8,6 @@ jobs:
     pool:
       vmImage: ubuntu-20.04
 
-    container:
-      image: trflynn89/libfly:ubuntu2010_clang11_gcc10_jdk15
-
     steps:
     - template: setup.yml
 
