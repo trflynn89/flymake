@@ -4,7 +4,7 @@ ARCH := $(shell uname -m)
 SUDO := $(shell which sudo)
 
 # Define installation directories.
-INSTALL_ROOT := /usr/local
+INSTALL_ROOT ?= /usr/local
 INSTALL_BIN_DIR := $(INSTALL_ROOT)/bin
 INSTALL_INC_DIR := $(INSTALL_ROOT)/include
 INSTALL_SRC_DIR := $(INSTALL_ROOT)/src
@@ -35,11 +35,11 @@ else
 endif
 
 ifneq ($(findstring x86_64, $(ARCH)),)
-    arch := x64
+    arch ?= x64
 else ifeq ($(arch), x64)
     $(error Cannot build 64-bit architecture on 32-bit machine)
 else
-    arch := x86
+    arch ?= x86
 endif
 
 ifneq ($(arch), $(filter $(SUPPORTED_ARCH), $(arch)))

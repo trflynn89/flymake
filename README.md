@@ -257,7 +257,7 @@ The following secondary goals are defined by flymake to aid in development:
 
 ## Build configuration
 
-The following command-line options may be specified when running `make` to configure the build:
+The following options may be specified to configure the build:
 
 | Option        | Accepted Values               | Default Value                 | Description |
 | :--           | :--                           | :--                           | :--         |
@@ -270,6 +270,10 @@ The following command-line options may be specified when running `make` to confi
 | `cacher`      | See description               | None                          | Enable use of a compilation cache (see (3) below). |
 | `stylized`    | `0`, `1`                      | `1`                           | Enable pretty build output. |
 | `verbose`     | `0`, `1`                      | `0`                           | Enable verbose build output. |
+
+These options make be specified either via the command line (e.g. `make mode=release`), or by
+setting them in the main Makefile before importing `build.mk`. The latter allows for changing the
+defaults for the project.
 
 1. Compilation mode changes the build flags used to build source files:
 
