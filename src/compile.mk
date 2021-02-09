@@ -73,7 +73,7 @@ $(1): LDLIBS := $(LDLIBS) $(LDLIBS_$(d)) $$(STATIC_$$(t))
 $(1): $(2) $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
 
-	@echo -e "[$(RED)Link$(DEFAULT) $$(subst $(CURDIR)/,,$$@)]"
+	@echo -e "[$(RED)Link$(DEFAULT) $$(subst $(output)/,,$$@)]"
 	$(LINK_CXX)
 
 endef
@@ -95,12 +95,12 @@ $$(STATIC_$$(t)) $$(SHARED_$$(t)): LDFLAGS := $(LDFLAGS) $(LDFLAGS_$(d))
 
 $$(STATIC_$$(t)): $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
-	@echo -e "[$(GREEN)Static$(DEFAULT) $$(subst $(CURDIR)/,,$$@)]"
+	@echo -e "[$(GREEN)Static$(DEFAULT) $$(subst $(output)/,,$$@)]"
 	$(STATIC)
 
 $$(SHARED_$$(t)): $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
-	@echo -e "[$(GREEN)Shared$(DEFAULT) $$(subst $(CURDIR)/,,$$@)]"
+	@echo -e "[$(GREEN)Shared$(DEFAULT) $$(subst $(output)/,,$$@)]"
 	$(SHARED_CXX)
 
 endef
@@ -138,7 +138,7 @@ $(1): $$(SOURCES_$$(t)) $$(MAKEFILES_$(d))
 
 	@# Create the JAR archive from the compiled set of class files, the contents of the extracted
 	@# dependent JARs, and the contents of any resource directories.
-	@echo -e "[$(RED)JAR$(DEFAULT) $$(subst $(CURDIR)/,,$$@)]"
+	@echo -e "[$(RED)JAR$(DEFAULT) $$(subst $(output)/,,$$@)]"
 	$(LINK_JAVA)
 
 endef

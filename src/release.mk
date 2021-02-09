@@ -15,7 +15,7 @@
 # Build the release package.
 define BUILD_REL
 
-    echo -e "[$(YELLOW)Package$(DEFAULT) $(subst $(CURDIR)/,,$@)]"; \
+    echo -e "[$(YELLOW)Package$(DEFAULT) $(subst $(output)/,,$@)]"; \
     \
     $(RM) -r $(ETC_TMP_DIR) && \
     mkdir -p $(REL_BIN_DIR) $(REL_LIB_DIR) $(REL_INC_DIR) $(REL_SRC_DIR) \
