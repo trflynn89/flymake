@@ -4,7 +4,7 @@
 # Build artifact directory.
 output ?= $(CURDIR)
 
-# Compilation toolchain (clang, gcc) for C-family targets.
+# Compilation toolchain (clang, gcc, none) for C-family targets.
 toolchain ?= clang
 
 # Compilation mode (debug, release, profile).
@@ -53,7 +53,7 @@ else ifeq ($(toolchain), gcc)
     CXX := g++
     AR := ar
     STRIP := strip
-else
+else ifneq ($(toolchain), none)
     $(error Unrecognized toolchain $(toolchain), check config.mk)
 endif
 
@@ -76,8 +76,8 @@ endif
 
 # Use a compiler cache if requested.
 ifneq ($(cacher), )
-    CC := $(cacher) $(CC)
-    CXX := $(cacher) $(CXX)
+    override CC := $(cacher) $(CC)
+    override CXX := $(cacher) $(CXX)
 endif
 
 # Define the output directories.
