@@ -239,7 +239,7 @@ endef
 define DEFINE_BIN_RULES
 
 # Push the current directory to the stack.
-$$(eval $$(call PUSH_DIR, $(1)))
+$$(eval $$(call PUSH_DIR, $(SOURCE_ROOT)/$(strip $(1))))
 
 # Define source, object, dependency, and binary files.
 ifeq ($$(wildcard $$(d)/files.mk),)
@@ -274,7 +274,7 @@ endef
 define DEFINE_LIB_RULES
 
 # Push the current directory to the stack.
-$$(eval $$(call PUSH_DIR, $(1)))
+$$(eval $$(call PUSH_DIR, $(SOURCE_ROOT)/$(strip $(1))))
 
 # Define source, object, dependency, and binary files.
 ifeq ($$(wildcard $$(d)/files.mk),)
@@ -309,7 +309,7 @@ endef
 define DEFINE_JAR_RULES
 
 # Push the current directory to the stack.
-$$(eval $$(call PUSH_DIR, $(1)))
+$$(eval $$(call PUSH_DIR, $(SOURCE_ROOT)/$(strip $(1))))
 
 # Define source, class, and generated files.
 include $$(d)/files.mk

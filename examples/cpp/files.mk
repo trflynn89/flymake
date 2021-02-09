@@ -1,2 +1,2 @@
 SRC_DIRS_$(d) := \
-    cpp/some_lib
+    $(d)/some_lib
