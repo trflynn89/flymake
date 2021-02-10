@@ -7,7 +7,7 @@
 # this, the following per-target variables are defined:
 #
 #     TARGET_TYPE_$(t) = The target's type.
-#     TARGET_PATH_$(t) = The target's source directory relative to $(SOURCE_ROOT).
+#     TARGET_PATH_$(t) = The target's source directory.
 #     TARGET_FILE_$(t) = The target output files, dependent on the target type.
 #     TARGET_PACKAGE_$(t) = The target's output archived release package.
 #     TARGET_DEPENDENCIES_$(t) = Output files from other targets that this target depends on.
@@ -34,7 +34,7 @@ TEST_BINARIES :=
 define DEFINE_TARGET
 
 # Define the global variable $(t) to refer to the current target.
-t := $$(strip $(1))
+t := $(strip $(1))
 .PHONY: $$(t)
 
 # Define the path to the target output binary/library.
@@ -86,7 +86,7 @@ else ifeq ($$(TARGET_TYPE_$$(t)), LIB)
 else ifeq ($$(TARGET_TYPE_$$(t)), JAR)
     $(call DEFINE_JAR_RULES, $$(TARGET_PATH_$$(t)), $$(TARGET_FILE_$$(t)), $$(TARGET_PACKAGE_$$(t)))
 else ifeq ($$(TARGET_TYPE_$$(t)), PKG)
-    $(call DEFINE_PKG_RULES, $$(TARGET_PATH_$$(t)), $$(TARGET_FILE_$$(t)), $$(TARGET_PACKAGE_$$(t)))
+    $(call DEFINE_PKG_RULES, $$(TARGET_PATH_$$(t)), $$(TARGET_PACKAGE_$$(t)))
 endif
 
 endef

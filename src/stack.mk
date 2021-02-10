@@ -21,7 +21,7 @@ sp := $$(sp).x
 pd_$$(sp) := $$(d)
 
 p := $$(d)
-d := $(abspath $(1))
+d := $(realpath $(1))
 
 CFLAGS_$$(d) := $$(CFLAGS_$$(p))
 CXXFLAGS_$$(d) := $$(CXXFLAGS_$$(p))
