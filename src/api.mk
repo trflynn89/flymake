@@ -20,21 +20,6 @@ else ifneq ($(words $(subst ., ,$(VERSION))), 3)
     $(error VERSION $(VERSION) must be of the form X.Y.Z)
 endif
 
-# List of all target names.
-TARGETS :=
-
-# List of all test target names.
-TEST_TARGETS :=
-
-# List of paths to exclude from style enforcement.
-STYLE_ENFORCEMENT_EXCLUSIONS :=
-
-# List of paths to exclude from code coverage reporting.
-COVERAGE_EXCLUSIONS :=
-
-# List of paths to exclude from generation of compilation database.
-COMPILATION_DATABASE_EXCLUSIONS :=
-
 # Add a target to the build system. The target name must be unique. This name will be used to
 # generate file names for the target library/binary/etc. The target type may be one of:
 #
