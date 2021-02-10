@@ -237,7 +237,7 @@ endef
 define DEFINE_BIN_RULES
 
 # Push the current directory to the stack.
-$$(eval $$(call PUSH_DIR, $(SOURCE_ROOT)/$(strip $(1))))
+$$(eval $$(call PUSH_DIR, $(strip $(1))))
 
 # Define source, object, dependency, and binary files.
 ifeq ($$(wildcard $$(d)/files.mk),)
@@ -272,7 +272,7 @@ endef
 define DEFINE_LIB_RULES
 
 # Push the current directory to the stack.
-$$(eval $$(call PUSH_DIR, $(SOURCE_ROOT)/$(strip $(1))))
+$$(eval $$(call PUSH_DIR, $(strip $(1))))
 
 # Define source, object, dependency, and binary files.
 ifeq ($$(wildcard $$(d)/files.mk),)
@@ -307,7 +307,7 @@ endef
 define DEFINE_JAR_RULES
 
 # Push the current directory to the stack.
-$$(eval $$(call PUSH_DIR, $(SOURCE_ROOT)/$(strip $(1))))
+$$(eval $$(call PUSH_DIR, $(strip $(1))))
 
 # Define source, class, and generated files.
 include $$(d)/files.mk
@@ -328,7 +328,7 @@ endef
 
 # Define all make goals and intermediate files required to compile C-family files.
 #
-# $(1) = The path to the target root directory.
+# $(1) = The path to the source directory.
 define DEFINE_OBJ_RULES
 
 # Push the current directory to the stack.
@@ -359,7 +359,7 @@ endef
 
 # Define all make goals and intermediate files required to compile Java files.
 #
-# $(1) = The path to the target root directory.
+# $(1) = The path to the source directory.
 define DEFINE_JAVA_RULES
 
 # Push the current directory to the stack.
@@ -382,8 +382,7 @@ endef
 # Define all make goals required to build a target of type PKG.
 #
 # $(1) = The path to the target root directory.
-# $(2) = Unused.
-# $(3) = The path to the target release package.
+# $(2) = The path to the target release package.
 define DEFINE_PKG_RULES
 
 # Push the current directory to the stack.
@@ -393,7 +392,7 @@ $$(eval $$(call PUSH_DIR, $(1)))
 include $$(d)/files.mk
 
 # Define the packaging rules.
-$$(eval $$(call PKG_RULES, $(3)))
+$$(eval $$(call PKG_RULES, $(2)))
 
 # Pop the current directory from the stack.
 $$(eval $$(call POP_DIR))
