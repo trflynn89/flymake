@@ -8,11 +8,18 @@ jobs:
     pool:
       vmImage: ubuntu-20.04
 
-    container:
-      image: trflynn89/libfly:ubuntu2010_clang11_gcc10_jdk15
-
     steps:
     - template: setup.yml
+
+    - ${{ if eq(parameters.toolchain, 'clang') }}:
+      - script: |
+          sudo apt-get install -y llvm
+        displayName: 'Dependencies'
+
+    - ${{ if eq(parameters.toolchain, 'gcc') }}:
+      - script: |
+          sudo apt-get install -y lcov
+        displayName: 'Dependencies'
 
     - script: |
         make install
