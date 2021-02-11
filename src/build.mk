@@ -65,10 +65,12 @@ tests: $(TEST_BINARIES)
 
 # Create a compilation database for clangd.
 commands: database := $(SOURCE_ROOT)/compile_commands.json
+commands: cc := $(subst +,\+,$(CC))
+commands: cxx := $(subst +,\+,$(CXX))
 commands:
 	$(Q)echo "[" > $(database) ; \
 	\
-	commands=$$(make --always-make --dry-run | grep -wE -- "$(CC)|$(CXX)" | grep -w -- "-c"); \
+	commands=$$($(MAKE) --always-make --dry-run | grep -wE -- "$(cc)|$(cxx)" | grep -w -- "-c"); \
 	\
 	echo "$$commands" | while read -r command ; do \
 		file=$$(echo "$$command" | rev | cut -d' ' -f1 | rev); \
