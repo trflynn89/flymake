@@ -1,0 +1,4 @@
+CXXFLAGS_$(d) += \
+    -DINNER_VALUE=1989
+
+$(eval $(call WILDCARD_SOURCES, CPP))
