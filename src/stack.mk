@@ -23,11 +23,13 @@ pd_$$(sp) := $$(d)
 p := $$(d)
 d := $(realpath $(1))
 
-CFLAGS_$$(d) := $$(CFLAGS_$$(p))
-CXXFLAGS_$$(d) := $$(CXXFLAGS_$$(p))
-LDFLAGS_$$(d) := $$(LDFLAGS_$$(p))
-LDLIBS_$$(d) := $$(LDLIBS_$$(p))
-JFLAGS_$$(d) := $$(JFLAGS_$$(p))
+ifneq ($$(p),)
+    CFLAGS_$$(d) := $$(CFLAGS_$$(p))
+    CXXFLAGS_$$(d) := $$(CXXFLAGS_$$(p))
+    LDFLAGS_$$(d) := $$(LDFLAGS_$$(p))
+    LDLIBS_$$(d) := $$(LDLIBS_$$(p))
+    JFLAGS_$$(d) := $$(JFLAGS_$$(p))
+endif
 
 endef
 
