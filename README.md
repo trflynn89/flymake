@@ -2,7 +2,7 @@
 
 [![Build Status](https://dev.azure.com/trflynn89/libfly/_apis/build/status/trflynn89.flymake?branchName=main)](https://dev.azure.com/trflynn89/libfly/_build/latest?definitionId=6&branchName=main)
 
-flymake is a parallel, non-recusrive GNU Makefile system for C-family and Java projects. The goal is
+flymake is a parallel, non-recursive GNU Makefile system for C-family and Java projects. The goal is
 to provide a system that is simple to use, requires minimal boilerplate, and produces fast builds.
 
 ## Installation
@@ -24,7 +24,7 @@ tar -C / -xjf flymake-[version].tar.bz2
 
 By default, both of the above methods will install flymake into `/usr/local/src/fly/`. It will also
 install an uninstallation script into `/usr/local/bin/uninstall_flymake`. This location may be
-overriden when installing from source:
+overridden when installing from source:
 
 ```bash
 make INSTALL_ROOT=$HOME install
