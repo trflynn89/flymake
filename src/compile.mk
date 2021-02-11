@@ -31,23 +31,23 @@
 # in flags.mk.
 
 # Define helper aliases for compiler/linker invocations.
-COMP_CC := $(Q)$(CC) $$(CFLAGS) -o $$@ -c $$<
-LINK_CC := $(Q)$(CC) $$(CFLAGS) -o $$@ $$(OBJS) $$(LDFLAGS) $$(LDLIBS)
+COMP_CC = $(Q)$(CC) $(CFLAGS) $(1) -MF $$(@:%.o=%.d) -o $$@ -c $$<
+LINK_CC = $(Q)$(CC) $(CFLAGS) $(2) -o $$@ $(1) $(LDFLAGS) $(3) $(LDLIBS) $(4)
 
-COMP_CXX := $(Q)$(CXX) $$(CXXFLAGS) -o $$@ -c $$<
-LINK_CXX := $(Q)$(CXX) $$(CXXFLAGS) -o $$@ $$(OBJS) $$(LDFLAGS) $$(LDLIBS)
+COMP_CXX = $(Q)$(CXX) $(CXXFLAGS) $(1) -MF $$(@:%.o=%.d) -o $$@ -c $$<
+LINK_CXX = $(Q)$(CXX) $(CXXFLAGS) $(2) -o $$@ $(1) $(LDFLAGS) $(3) $(LDLIBS) $(4)
 
-COMP_JAVA := $(Q)$(JAVAC) $$(JFLAGS) -d $$(CLASS_DIR) $$(CLASS_PATH) $$(SOURCES)
-LINK_JAVA := $(Q)$(JAR) $(JAR_CREATE_FLAGS) $$(MAIN_CLASS) $$@ $$(CONTENTS)
+COMP_JAVA = $(Q)$(JAVAC) $(JFLAGS) $(2) -d $(3) $(4) $(1)
+LINK_JAVA = $(Q)$(JAR) $(JAR_CREATE_FLAGS) $(1) $$@ $(2)
 
-STATIC := $(Q)$(AR) rcs $$@ $$(OBJS)
+STATIC = $(Q)$(AR) rcs $$@ $(1)
 
 ifeq ($(SYSTEM), LINUX)
-    SHARED_CC := $(Q)$(CC) $$(CFLAGS) -shared -Wl,-soname,$$(@F) -o $$@ $$(OBJS) $$(LDFLAGS)
-    SHARED_CXX := $(Q)$(CXX) $$(CXXFLAGS) -shared -Wl,-soname,$$(@F) -o $$@ $$(OBJS) $$(LDFLAGS)
+    SHARED_CC = $(Q)$(CC) $(CFLAGS) $(2) -shared -Wl,-soname,$$(@F) -o $$@ $(1) $(LDFLAGS) $(3)
+    SHARED_CXX = $(Q)$(CXX) $(CXXFLAGS) $(2) -shared -Wl,-soname,$$(@F) -o $$@ $(1) $(LDFLAGS) $(3)
 else ifeq ($(SYSTEM), MACOS)
-    SHARED_CC := $(Q)$(CC) $$(CFLAGS) -dynamiclib -o $$@ $$(OBJS) $$(LDFLAGS)
-    SHARED_CXX := $(Q)$(CXX) $$(CXXFLAGS) -dynamiclib -o $$@ $$(OBJS) $$(LDFLAGS)
+    SHARED_CC = $(Q)$(CC) $(CFLAGS) $(2) -dynamiclib -o $$@ $(1) $(LDFLAGS) $(3)
+    SHARED_CXX = $(Q)$(CXX) $(CXXFLAGS) $(2) -dynamiclib -o $$@ $(1) $(LDFLAGS) $(3)
 else
     $(error Unrecognized system $(SYSTEM), check compile.mk)
 endif
@@ -60,19 +60,11 @@ define BIN_RULES
 
 MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
 
-STATIC_$$(t) := $(filter %.a,$(2))
-
-$(1): OBJS := $$(OBJ_$$(t))
-$(1): CFLAGS := $(CFLAGS) $(CFLAGS_$(d))
-$(1): CXXFLAGS := $(CXXFLAGS) $(CXXFLAGS_$(d))
-$(1): LDFLAGS := $(LDFLAGS) $(LDFLAGS_$(d))
-$(1): LDLIBS := $(LDLIBS) $(LDLIBS_$(d)) $$(STATIC_$$(t))
-
 $(1): $(2) $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
-
 	@echo -e "[$(RED)Link$(DEFAULT) $$(subst $(output)/,,$$@)]"
-	$(LINK_CXX)
+	$(call LINK_CXX, $(OBJ_$(t)), $(CXXFLAGS_$(d)), $(LDFLAGS_$(d)), \
+		$(LDLIBS_$(d)) $(filter %.a,$(2)))
 
 endef
 
@@ -86,20 +78,15 @@ MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
 STATIC_$$(t) := $(filter %.a,$(1))
 SHARED_$$(t) := $(filter %.$(SHARED_LIB_EXT).$(VERSION),$(1))
 
-$$(STATIC_$$(t)) $$(SHARED_$$(t)): OBJS := $$(OBJ_$$(t))
-$$(STATIC_$$(t)) $$(SHARED_$$(t)): CFLAGS := $(CFLAGS) $(CFLAGS_$(d))
-$$(STATIC_$$(t)) $$(SHARED_$$(t)): CXXFLAGS := $(CXXFLAGS) $(CXXFLAGS_$(d))
-$$(STATIC_$$(t)) $$(SHARED_$$(t)): LDFLAGS := $(LDFLAGS) $(LDFLAGS_$(d))
-
 $$(STATIC_$$(t)): $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
 	@echo -e "[$(GREEN)Static$(DEFAULT) $$(subst $(output)/,,$$@)]"
-	$(STATIC)
+	$(call STATIC, $(OBJ_$(t)))
 
 $$(SHARED_$$(t)): $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
 	@echo -e "[$(GREEN)Shared$(DEFAULT) $$(subst $(output)/,,$$@)]"
-	$(SHARED_CXX)
+	$(call SHARED_CXX, $(OBJ_$(t)), $(CXXFLAGS_$(d)), $(LDFLAGS_$(d)))
 
 endef
 
@@ -112,32 +99,24 @@ define JAR_RULES
 
 MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
 
-$(1): SOURCES := $$(SOURCES_$$(t))
-$(1): JFLAGS := $(JFLAGS) $(JFLAGS_$(d))
-$(1): CLASS_DIR := $$(CLASS_DIR_$$(t))
-$(1): CLASS_PATH := $$(CLASS_PATH_$$(t))
-$(1): MAIN_CLASS := $(2)
-$(1): CONTENTS := $$(CONTENTS_$$(t))
-
 $(1): $$(SOURCES_$$(t)) $$(MAKEFILES_$(d))
 	@# Remove the target's class directory as a safe measure in case Java files have been deleted.
-	@$(RM) -r $$(CLASS_DIR)
-
-	@mkdir -p $$(@D) $$(CLASS_DIR)
+	@$(RM) -r $(CLASS_DIR_$(t))
+	@mkdir -p $$(@D) $(CLASS_DIR_$(t))
 
 	@# Compile the Java source files into class files.
 	@echo -e "[$(CYAN)Compile$(DEFAULT) $(strip $(2))]"
-	$(COMP_JAVA)
+	$(call COMP_JAVA, $(SOURCES_$(t)), $(JFLAGS_$(d)), $(CLASS_DIR_$(t)), $(CLASS_PATH_$(t)))
 
 	@# Iterate over every JAR file in the class path and extracts them for inclusion in the target.
-	$(Q)for jar in $$(CLASS_PATH_JAR_$$(t)) ; do \
-		unzip $(ZIP_EXTRACT_FLAGS) -o $$$$jar -d $$(CLASS_DIR) "*.class" ; \
+	$(Q)for jar in $(CLASS_PATH_JAR_$(t)) ; do \
+		unzip $(ZIP_EXTRACT_FLAGS) -o $$$$jar -d $(CLASS_DIR_$(t)) "*.class" ; \
 	done
 
 	@# Create the JAR archive from the compiled set of class files, the contents of the extracted
 	@# dependent JARs, and the contents of any resource directories.
 	@echo -e "[$(RED)JAR$(DEFAULT) $$(subst $(output)/,,$$@)]"
-	$(LINK_JAVA)
+	$(call LINK_JAVA, $(2), $(CONTENTS_$(t)))
 
 endef
 
@@ -177,39 +156,35 @@ define OBJ_RULES
 
 MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
 
-# Use = instead of := because $$(@) would become an empty string if expanded now.
-$(1)/%.o: CFLAGS = $(CFLAGS) $(CFLAGS_$(d)) -MF $$(@:%.o=%.d)
-$(1)/%.o: CXXFLAGS = $(CXXFLAGS) $(CXXFLAGS_$(d)) -MF $$(@:%.o=%.d)
-
 # C files.
 $(1)/%.o: $(d)/%.c $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
 	@echo -e "[$(CYAN)Compile$(DEFAULT) $$(subst $(SOURCE_ROOT)/,,$$<)]"
-	$(COMP_CC)
+	$(call COMP_CC, $(CFLAGS_$(d)))
 
 # CC files.
 $(1)/%.o: $(d)/%.cc $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
 	@echo -e "[$(CYAN)Compile$(DEFAULT) $$(subst $(SOURCE_ROOT)/,,$$<)]"
-	$(COMP_CXX)
+	$(call COMP_CXX, $(CXXFLAGS_$(d)))
 
 # C++ files.
 $(1)/%.o: $(d)/%.cpp $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
 	@echo -e "[$(CYAN)Compile$(DEFAULT) $$(subst $(SOURCE_ROOT)/,,$$<)]"
-	$(COMP_CXX)
+	$(call COMP_CXX, $(CXXFLAGS_$(d)))
 
 # Objective-C files.
 $(1)/%.o: $(d)/%.m $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
 	@echo -e "[$(CYAN)Compile$(DEFAULT) $$(subst $(SOURCE_ROOT)/,,$$<)]"
-	$(COMP_CC)
+	$(call COMP_CC, $(CFLAGS_$(d)))
 
 # Objective-C++ files.
 $(1)/%.o: $(d)/%.mm $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
 	@echo -e "[$(CYAN)Compile$(DEFAULT) $$(subst $(SOURCE_ROOT)/,,$$<)]"
-	$(COMP_CXX)
+	$(call COMP_CXX, $(CXXFLAGS_$(d)))
 
 endef
 
