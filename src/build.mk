@@ -206,10 +206,16 @@ else
 endif
 
 # Style enforcement.
+style: check := 0
 style: OPEN_PAREN := (
 style: CLOSE_PAREN := )
 style:
-	$(Q)clang-format -i $$(find $(SOURCE_ROOT)  \
+	$(Q) \
+	if [[ $(check) -eq 1 ]] ; then \
+		format_flags="--dry-run --Werror"; \
+	fi; \
+	\
+	clang-format $$format_flags -i $$(find $(SOURCE_ROOT)  \
 		$(foreach exclusion, $(STYLE_ENFORCEMENT_EXCLUSIONS), \
 			-not \$(OPEN_PAREN) -path "*$(exclusion)*" -prune \$(CLOSE_PAREN)) \
 		-type f -name "*.h" -o -name "*.hh" -o -name "*.hpp" \

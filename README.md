@@ -266,7 +266,8 @@ The following secondary goals are defined by flymake to aid in development:
 * `coverage` - Generate a code coverage report of the last unit test execution.
 * `profile` - Run all unit tests and generate a profile report of the unit test execution (see
   `gcc`'s `-pg` flag).
-* `style` - Run `clang-format` on all source files under `SOURCE_ROOT`.
+* `style` - Run `clang-format` on all source files under `SOURCE_ROOT`. Run with `check=1` to verify
+that all source files are style compliant.
 * `setup` - Install (via the system's package manager) tools used by the flymake build system, such
   as `gcc`, `clang`, `clang-format`, etc.
 
