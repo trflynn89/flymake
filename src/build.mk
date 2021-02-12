@@ -169,28 +169,37 @@ endif
 # Install the target.
 install: $(TARGET_PACKAGES)
 	$(Q)failed=0; \
+	\
 	for pkg in $(TARGET_PACKAGES) ; do \
 		if [[ -f $$pkg ]] ; then \
 			$(SUDO) tar -C / $(TAR_EXTRACT_FLAGS) $$pkg; \
+			\
 			if [[ $$? -ne 0 ]] ; then \
 				failed=$$((failed+1)); \
 			fi; \
 		fi; \
 	done; \
-	exit $$failed
+	\
+	if [[ $$failed -ne 0 ]] ; then \
+		exit $$failed; \
+	fi
+
+ifeq ($(SYSTEM), LINUX)
+	$(Q)$(SUDO) ldconfig
+endif
 
 # Install dependencies.
 setup:
 ifeq ($(SYSTEM), LINUX)
 ifeq ($(VENDOR), DEBIAN)
 	$(Q)$(SUDO) apt install -y git make clang clangd clang-format clang-tidy lld llvm gcc g++ lcov \
-		openjdk-14-jdk
+		openjdk-15-jdk
 ifeq ($(arch), x86)
 	$(Q)$(SUDO) apt install -y gcc-multilib g++-multilib
 endif
 else ifeq ($(VENDOR), REDHAT)
 	$(Q)$(SUDO) dnf install -y git make clang lld llvm gcc gcc-c++ lcov libstdc++-static libasan \
-		libatomic java-14-openjdk-devel
+		libatomic java-15-openjdk-devel
 ifeq ($(arch), x86)
 	$(Q)$(SUDO) dnf install -y glibc-devel.i686 libstdc++-static.i686 libasan.i686 libatomic.i686
 endif
