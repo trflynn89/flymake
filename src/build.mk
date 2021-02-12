@@ -180,13 +180,11 @@ install: $(TARGET_PACKAGES)
 		fi; \
 	done; \
 	\
-	if [[ $$failed -ne 0 ]] ; then \
-		exit $$failed; \
-	fi
-
-ifeq ($(SYSTEM), LINUX)
-	$(Q)$(SUDO) ldconfig
-endif
+	if [[ $(SYSTEM) == "LINUX" ]] ; then \
+		$(SUDO) ldconfig; \
+	fi; \
+	\
+	exit $$failed
 
 # Install dependencies.
 setup:

@@ -48,6 +48,10 @@ define BUILD_REL
     files="$$files $(INSTALL_BIN_DIR)/uninstall_$(REL_NAME)"; \
     echo $(SUDO) $(RM) -r "$$files" >> $(REL_BIN_DIR)/uninstall_$(REL_NAME); \
     \
+    if [[ $(SYSTEM) == "LINUX" ]] ; then \
+        echo $(SUDO) ldconfig >> $(REL_BIN_DIR)/uninstall_$(REL_NAME); \
+    fi; \
+    \
     tar $(TAR_CREATE_FLAGS) $@ *; \
     $(RM) -r $(ETC_TMP_DIR)
 
