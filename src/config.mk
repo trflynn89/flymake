@@ -31,6 +31,13 @@ ifeq ($(mode), debug)
     endif
 endif
 
+# Enable code coverage instrumentation.
+ifeq ($(mode), debug)
+    coverage ?= 1
+else
+    coverage ?= 0
+endif
+
 # Compile caching system.
 cacher ?=
 

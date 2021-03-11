@@ -285,6 +285,7 @@ The following options may be specified to configure the build:
 | `cstandard`   | Any valid `-std` option       | `c2x`                         | The language standard to use for C files, passed directly to `-std`. |
 | `cxxstandard` | Any valid `-std` option       | `c++2a`                       | The language standard to use for C++ files, passed directly to `-std`. |
 | `sanitize`    | Any valid `-fsanitize` option | See description               | The sanitizers to enable, passed directly to `-fsanitize`<sup>4</sup>. |
+| `coverage`    | `0`, `1`                      | `1` if `mode=debug`, else `0` | Enable code coverage instrumentation. |
 | `cacher`      | See description               | None                          | Enable use of a compilation cache<sup>5</sup>. |
 | `stylized`    | `0`, `1`                      | `1`                           | Enable pretty build output. |
 | `verbose`     | `0`, `1`                      | `0`                           | Enable verbose build output. |
@@ -304,7 +305,7 @@ should also define the following:
 
 <sup>2</sup> Compilation mode changes the build flags used to build source files:
 
-* `debug` - Debugging symbols and code coverage instrumentation are added to compiled sources.
+* `debug` - Debugging symbols are added to compiled sources.
 * `release` - Builds are optimized and all debugging information is removed.
 * `profile` - Builds are optimized and profiling symbols are added for generation of profile
   reports. Currently only supported if the `toolchain` is `gcc`.
