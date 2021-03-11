@@ -130,17 +130,10 @@ JFLAGS += \
     -Werror \
     -Xlint
 
-# Add debug and coverage symbols for debug builds, optimize release builds, and add profiling
-# symbols for profile builds.
+# Add debug symbols, optimize release builds, or add profiling symbols.
 ifeq ($(mode), debug)
     CF_ALL += -O0 -g
     JFLAGS += -g:lines,vars,source
-
-    ifeq ($(toolchain), clang)
-        CF_ALL += -fprofile-instr-generate -fcoverage-mapping
-    else ifeq ($(toolchain), gcc)
-        CF_ALL += --coverage
-    endif
 else ifeq ($(mode), release)
     CF_ALL += -O2 -DNDEBUG
     JFLAGS += -g:none
@@ -156,6 +149,15 @@ endif
 # Enable sanitizers.
 ifneq ($(sanitize),)
     CF_ALL += -fsanitize=$(sanitize) -fno-omit-frame-pointer -fno-sanitize-recover=all
+endif
+
+# Enable code coverage instrumentation.
+ifeq ($(coverage), 1)
+    ifeq ($(toolchain), clang)
+        CF_ALL += -fprofile-instr-generate -fcoverage-mapping
+    else ifeq ($(toolchain), gcc)
+        CF_ALL += --coverage
+    endif
 endif
 
 CFLAGS += $(CF_ALL)
