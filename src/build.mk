@@ -4,6 +4,7 @@
 #     all = Build all targets added via $(ADD_TARGET) in the application Makefile.
 #     clean = Remove the build output directory for the current configuration.
 #     tests = Run all unit tests added via $(ADD_TARGET) with a target type of TEST.
+#     docs = Run Doxygen to generate source code documentation.
 #     commands = Create a clangd compilation database for the current configuration.
 #     profile = Run all unit tests and generate a code profile report of the unit test execution.
 #     coverage = Generate a code coverage report of the last unit test execution.
@@ -15,6 +16,7 @@
 .PHONY: all
 .PHONY: clean
 .PHONY: tests
+.PHONY: docs
 .PHONY: commands
 .PHONY: profile
 .PHONY: coverage
@@ -62,6 +64,11 @@ tests: $(TEST_BINARIES)
 	done; \
 	\
 	exit $$failed
+
+#
+docs: doxyfile := $(SOURCE_ROOT)/Doxyfile
+docs:
+	$(Q)doxygen $(doxyfile)
 
 # Create a compilation database for clangd.
 commands: database := $(SOURCE_ROOT)/compile_commands.json
@@ -190,14 +197,14 @@ install: $(TARGET_PACKAGES)
 setup:
 ifeq ($(SYSTEM), LINUX)
 ifeq ($(VENDOR), DEBIAN)
-	$(Q)$(SUDO) apt install -y git make clang clangd clang-format clang-tidy lld llvm gcc g++ lcov \
-		openjdk-15-jdk
+	$(Q)$(SUDO) apt install -y git make clang clangd clang-format clang-tidy doxygen graphviz lld \
+		llvm gcc g++ lcov openjdk-15-jdk
 ifeq ($(arch), x86)
 	$(Q)$(SUDO) apt install -y gcc-multilib g++-multilib
 endif
 else ifeq ($(VENDOR), REDHAT)
-	$(Q)$(SUDO) dnf install -y git make clang lld llvm gcc gcc-c++ lcov libstdc++-static libasan \
-		libatomic java-15-openjdk-devel
+	$(Q)$(SUDO) dnf install -y git make clang doxygen graphviz lld llvm gcc gcc-c++ lcov \
+		libstdc++-static libasan libatomic java-15-openjdk-devel
 ifeq ($(arch), x86)
 	$(Q)$(SUDO) dnf install -y glibc-devel.i686 libstdc++-static.i686 libasan.i686 libatomic.i686
 endif

@@ -257,6 +257,8 @@ The following primary goals are defined by flymake:
 * `clean` - Remove the artifact directory for the current build configuration (see
   [Build configuration](#build-configuration)).
 * `tests` - Run all unit tests defined in the Makefile with the `TEST` target type.
+* `docs` - Run Doxygen to generate source code documentation. Path to the Doxygen configuration file
+   may be set via the `doxyfile` command line option (defaults to `$(SOURCE_ROOT)/Doxyfile`).
 * `install` - Extract any target release package created during the build in the file system root
   directory (see [Release packages](#release-packages)).
 
