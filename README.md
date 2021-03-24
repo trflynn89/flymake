@@ -1,6 +1,6 @@
 # flymake
 
-[![Build Status](https://dev.azure.com/trflynn89/libfly/_apis/build/status/trflynn89.flymake?branchName=main)](https://dev.azure.com/trflynn89/libfly/_build/latest?definitionId=6&branchName=main)
+[![Azure DevOps](https://img.shields.io/azure-devops/build/trflynn89/eb3b4226-f8b0-4c71-ae96-3f03b0def035/6/main?style=for-the-badge)](https://dev.azure.com/trflynn89/libfly/_build?definitionId=6)
 
 flymake is a parallel, non-recursive GNU Makefile system for C-family and Java projects. The goal is
 to provide a system that is simple to use, requires minimal boilerplate, and produces fast builds.
