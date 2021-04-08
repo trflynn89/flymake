@@ -57,6 +57,10 @@ ifeq ($(arch), x86)
     CF_ALL += -m32
 endif
 
+ifeq ($(toolchain), gcc)
+    CF_ALL += -Wno-psabi
+endif
+
 # C and C++ specific flags.
 CFLAGS :=
 CXXFLAGS :=
