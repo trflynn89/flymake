@@ -53,6 +53,10 @@ define BUILD_REL
     fi; \
     \
     tar $(TAR_CREATE_FLAGS) $@ *; \
+    if [[ $$? -ne 0 ]] ; then \
+        exit 1; \
+    fi; \
+    \
     $(RM) -r $(ETC_TMP_DIR)
 
 endef
