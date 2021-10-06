@@ -13,12 +13,12 @@ jobs:
 
     - ${{ if eq(parameters.toolchain, 'clang') }}:
       - script: |
-          sudo apt-get install -y llvm
+          sudo apt-get install -y clang lld llvm
         displayName: 'Dependencies'
 
     - ${{ if eq(parameters.toolchain, 'gcc') }}:
       - script: |
-          sudo apt-get install -y lcov
+          sudo apt-get install -y  gcc g++ lcov
         displayName: 'Dependencies'
 
     - script: |
