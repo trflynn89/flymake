@@ -38,8 +38,12 @@ MAKEFLAGS += --no-builtin-rules --no-print-directory
 SHELL := /bin/bash
 
 # Linker flags.
-LDFLAGS := -L$(INSTALL_LIB_DIR)
-LDLIBS := -lpthread
+LDFLAGS ?=
+LDLIBS ?=
+
+# Standard linker flags.
+LDFLAGS += -L$(INSTALL_LIB_DIR)
+LDLIBS += -lpthread
 
 ifeq ($(SYSTEM), LINUX)
     LDLIBS += -latomic
@@ -62,11 +66,11 @@ ifeq ($(toolchain), gcc)
 endif
 
 # C and C++ specific flags.
-CFLAGS :=
-CXXFLAGS :=
+CFLAGS ?=
+CXXFLAGS ?=
 
 # Compiler flags for Java files.
-JFLAGS :=
+JFLAGS ?=
 
 # Language standard flags.
 CFLAGS += -std=$(cstandard)
