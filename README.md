@@ -258,7 +258,7 @@ The following primary goals are defined by flymake:
   [Build configuration](#build-configuration)).
 * `tests` - Run all unit tests defined in the Makefile with the `TEST` target type.
 * `docs` - Run Doxygen to generate source code documentation. Path to the Doxygen configuration file
-   may be set via the `doxyfile` command line option (defaults to `$(SOURCE_ROOT)/Doxyfile`).
+  may be set via the `doxyfile` command line option (defaults to `$(SOURCE_ROOT)/Doxyfile`).
 * `install` - Extract any target release package created during the build in the file system root
   directory (see [Release packages](#release-packages)).
 
@@ -269,7 +269,8 @@ The following secondary goals are defined by flymake to aid in development:
 * `profile` - Run all unit tests and generate a profile report of the unit test execution (see
   `gcc`'s `-pg` flag).
 * `style` - Run `clang-format` on all source files under `SOURCE_ROOT`. Run with `check=1` to verify
-that all source files are style compliant.
+  that all source files are style compliant. Use `formatter` to override the path to the
+  `clang-format` binary.
 * `setup` - Install (via the system's package manager) tools used by the flymake build system, such
   as `gcc`, `clang`, `clang-format`, etc.
 

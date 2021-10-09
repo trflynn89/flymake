@@ -220,6 +220,7 @@ else
 endif
 
 # Style enforcement.
+style: formatter := clang-format
 style: check := 0
 style: OPEN_PAREN := (
 style: CLOSE_PAREN := )
@@ -229,7 +230,7 @@ style:
 		format_flags="--dry-run --Werror"; \
 	fi; \
 	\
-	clang-format $$format_flags -i $$(find $(SOURCE_ROOT)  \
+	$(formatter) $$format_flags -i $$(find $(SOURCE_ROOT)  \
 		$(foreach exclusion, $(STYLE_ENFORCEMENT_EXCLUSIONS), \
 			-not \$(OPEN_PAREN) -path "*$(exclusion)*" -prune \$(CLOSE_PAREN)) \
 		-type f -name "*.h" -o -name "*.hh" -o -name "*.hpp" \
