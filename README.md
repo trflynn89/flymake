@@ -287,8 +287,8 @@ The following options may be specified to configure the build:
 | `strict`      | `0`, `1`, `2`                 | `2`                           | Compiler warning level<sup>3</sup>. |
 | `cstandard`   | Any valid `-std` option       | `c2x`                         | The language standard to use for C files, passed directly to `-std`. |
 | `cxxstandard` | Any valid `-std` option       | `c++2a`                       | The language standard to use for C++ files, passed directly to `-std`. |
-| `sanitize`    | Any valid `-fsanitize` option | See description               | The sanitizers to enable, passed directly to `-fsanitize`<sup>4</sup>. |
-| `coverage`    | `0`, `1`                      | `1` if `mode=debug`, else `0` | Enable code coverage instrumentation. |
+| `sanitize`    | Any valid `-fsanitize` option | None                          | The sanitizers to enable, passed directly to `-fsanitize`<sup>4</sup>. |
+| `coverage`    | `0`, `1`                      | `0`                           | Enable code coverage instrumentation. |
 | `cacher`      | See description               | None                          | Enable use of a compilation cache<sup>5</sup>. |
 | `stylized`    | `0`, `1`                      | `1`                           | Enable pretty build output. |
 | `verbose`     | `0`, `1`                      | `0`                           | Enable verbose build output. |
@@ -322,9 +322,9 @@ are:
 * `1` - Enable `-Wall -Wextra -Werror`.
 * `2` - Enable `-pedantic` and more. See [flags.mk](src/flags.mk) for all warnings that are set.
 
-<sup>4</sup> By default, flymake will enable AddressSanitizer and UndefinedBehaviorSanitizer for x64
-debug builds, and just AddressSanitizer for x86 debug builds (UndefinedBehaviorSanitizer is not
-enabled for x86 by default because some Clang versions aren't able to link).
+<sup>4</sup> By default, flymake will not enable any sanitizers. If you would like to use a
+sanitizer, set `sanitize` to the relevant `-fsanitize` options (e.g. `-fsanitize=address` or
+`-fsanitize=address,undefined`).
 
 <sup>5</sup> By default, a compilation cache is not used. If you would like to use a compilation
 cache, set `cacher` to the cache binary to use (e.g. `cacher=ccache`).
