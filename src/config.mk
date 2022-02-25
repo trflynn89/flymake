@@ -29,7 +29,9 @@ sanitize ?=
 coverage ?= 0
 
 # Compile caching system.
-cacher ?=
+ifneq ($(CCACHE), )
+    cacher ?= $(CCACHE)
+endif
 
 # Enable stylized build output.
 stylized ?= 1

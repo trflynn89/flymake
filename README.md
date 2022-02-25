@@ -289,7 +289,7 @@ The following options may be specified to configure the build:
 | `cxxstandard` | Any valid `-std` option       | `c++2a`                       | The language standard to use for C++ files, passed directly to `-std`. |
 | `sanitize`    | Any valid `-fsanitize` option | None                          | The sanitizers to enable, passed directly to `-fsanitize`<sup>4</sup>. |
 | `coverage`    | `0`, `1`                      | `0`                           | Enable code coverage instrumentation. |
-| `cacher`      | See description               | None                          | Enable use of a compilation cache<sup>5</sup>. |
+| `cacher`      | See description               | `ccache`, if available        | Enable use of a compilation cache<sup>5</sup>. |
 | `stylized`    | `0`, `1`                      | `1`                           | Enable pretty build output. |
 | `verbose`     | `0`, `1`                      | `0`                           | Enable verbose build output. |
 
@@ -326,8 +326,9 @@ are:
 sanitizer, set `sanitize` to the relevant `-fsanitize` options (e.g. `-fsanitize=address` or
 `-fsanitize=address,undefined`).
 
-<sup>5</sup> By default, a compilation cache is not used. If you would like to use a compilation
-cache, set `cacher` to the cache binary to use (e.g. `cacher=ccache`).
+<sup>5</sup> By default, if `ccache` is installed and available on the system `$PATH`, flymake will
+use `ccache` as the compilation cache. If you would like to override this, set `cacher` to the cache
+binary to use, or an empty value to disable caching entirely.
 
 ## Build artifacts
 
