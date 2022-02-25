@@ -2,6 +2,7 @@
 
 ARCH := $(shell uname -m)
 SUDO := $(shell which sudo)
+CCACHE := $(shell which ccache)
 
 # Define installation directories.
 INSTALL_ROOT ?= /usr/local
