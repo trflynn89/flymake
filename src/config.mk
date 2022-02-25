@@ -23,20 +23,10 @@ cstandard ?= c2x
 cxxstandard ?= c++2a
 
 # Sanitizers (AddressSanitizer, UndefinedBehaviorSanitizer) to enable.
-ifeq ($(mode), debug)
-    ifeq ($(arch), x64)
-        sanitize ?= address,undefined
-    else
-        sanitize ?= address
-    endif
-endif
+sanitize ?=
 
 # Enable code coverage instrumentation.
-ifeq ($(mode), debug)
-    coverage ?= 1
-else
-    coverage ?= 0
-endif
+coverage ?= 0
 
 # Compile caching system.
 cacher ?=
