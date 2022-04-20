@@ -81,6 +81,7 @@ SHARED_$$(t) := $(filter %.$(SHARED_LIB_EXT).$(VERSION),$(1))
 $$(STATIC_$$(t)): $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
 	@echo -e "[$(GREEN)Static$(DEFAULT) $$(subst $(output)/,,$$@)]"
+	@$(RM) $$@
 	$(call STATIC, $(OBJ_$(t)))
 
 $$(SHARED_$$(t)): $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
