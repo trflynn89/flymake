@@ -119,11 +119,13 @@ ifneq ($(strict), 0)
                 -Wsign-conversion
 
             # C++20 introduces __VA_OPT__ to handle variadic macros invoked with zero variadic
-            # arguments. However, clang has not updated -pedantic to allow such invocations.
+            # arguments. However, Apple's clang has not updated -pedantic to allow such invocations.
             # See: https://stackoverflow.com/a/67996331
-            ifeq ($(cxxstandard), $(filter c++20 c++2a, $(cxxstandard)))
-                CF_ALL += \
-                    -Wno-gnu-zero-variadic-macro-arguments
+            ifeq ($(SYSTEM), MACOS)
+                ifeq ($(cxxstandard), $(filter c++20 c++2a, $(cxxstandard)))
+                    CF_ALL += \
+                        -Wno-gnu-zero-variadic-macro-arguments
+                endif
             endif
         else ifeq ($(toolchain), gcc)
             CF_ALL += \
