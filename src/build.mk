@@ -197,14 +197,14 @@ install: $(TARGET_PACKAGES)
 setup:
 ifeq ($(SYSTEM), LINUX)
 ifeq ($(VENDOR), DEBIAN)
-	$(Q)$(SUDO) apt install -y clang clangd clang-format clang-tidy doxygen graphviz lld llvm gcc \
-		g++ lcov openjdk-15-jdk
+	$(Q)$(SUDO) apt install -y ccache clang clangd clang-format clang-tidy doxygen lld llvm gcc \
+		g++ lcov openjdk-18-jdk
 ifeq ($(arch), x86)
 	$(Q)$(SUDO) apt install -y gcc-multilib g++-multilib
 endif
 else ifeq ($(VENDOR), REDHAT)
-	$(Q)$(SUDO) dnf install -y clang doxygen graphviz lld llvm gcc gcc-c++ lcov libstdc++-static \
-		libasan libatomic java-15-openjdk-devel
+	$(Q)$(SUDO) dnf install -y ccache clang doxygen lld llvm gcc gcc-c++ lcov libasan libatomic \
+		libstdc++-static java-18-openjdk-devel
 ifeq ($(arch), x86)
 	$(Q)$(SUDO) dnf install -y glibc-devel.i686 libstdc++-static.i686 libasan.i686 libatomic.i686
 endif
