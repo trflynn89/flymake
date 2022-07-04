@@ -22,6 +22,15 @@ cstandard ?= c2x
 # C++ language standard.
 cxxstandard ?= c++2a
 
+# Linker (lld, gold, etc.) to use.
+ifeq ($(SYSTEM), LINUX)
+    linker ?= lld
+else ifeq ($(SYSTEM), MACOS)
+    linker ?= ld
+else
+    $(error Unknown system $(SYSTEM), check config.mk)
+endif
+
 # Sanitizers (AddressSanitizer, UndefinedBehaviorSanitizer) to enable.
 sanitize ?=
 
