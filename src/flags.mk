@@ -42,7 +42,7 @@ LDFLAGS ?=
 LDLIBS ?=
 
 # Standard linker flags.
-LDFLAGS += -L$(INSTALL_LIB_DIR)
+LDFLAGS += -L$(INSTALL_LIB_DIR) -fuse-ld=$(linker)
 LDLIBS += -lpthread
 
 ifeq ($(SYSTEM), LINUX)
@@ -184,15 +184,6 @@ CXXFLAGS += $(CF_ALL)
 # Enable verbose Java output.
 ifeq ($(verbose), 1)
     JFLAGS += -verbose
-endif
-
-# On Linux: Use LLD linker with clang toolchain. Use gold linker with gcc toolchain.
-ifeq ($(SYSTEM), LINUX)
-    ifeq ($(toolchain), clang)
-        LDFLAGS += -fuse-ld=lld
-    else ifeq ($(toolchain), gcc)
-        LDFLAGS += -fuse-ld=gold
-    endif
 endif
 
 # On macOS: Link commonly used frameworks.

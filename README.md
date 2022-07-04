@@ -287,6 +287,7 @@ The following options may be specified to configure the build:
 | `strict`      | `0`, `1`, `2`                 | `2`                           | Compiler warning level<sup>3</sup>. |
 | `cstandard`   | Any valid `-std` option       | `c2x`                         | The language standard to use for C files, passed directly to `-std`. |
 | `cxxstandard` | Any valid `-std` option       | `c++2a`                       | The language standard to use for C++ files, passed directly to `-std`. |
+| `linker`      | Any valid `-fuse-ld` option   | `lld` on Linux, `ld` on macOS | The linker to use for creating executables, passed directly to `-fuse-ld`. |
 | `sanitize`    | Any valid `-fsanitize` option | None                          | The sanitizers to enable, passed directly to `-fsanitize`<sup>4</sup>. |
 | `coverage`    | `0`, `1`                      | `0`                           | Enable code coverage instrumentation. |
 | `cacher`      | See description               | `ccache`, if available        | Enable use of a compilation cache<sup>5</sup>. |
