@@ -5,7 +5,7 @@ jobs:
   - job: 'macOS_${{ parameters.mode }}'
 
     pool:
-      vmImage: macOS-10.15
+      vmImage: macOS-latest
 
     steps:
     - template: setup.yml
