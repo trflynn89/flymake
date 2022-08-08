@@ -12,16 +12,34 @@ JAVA_EXTENSIONS := .java
 
 # Define output files for compiled C-family targets.
 #
-# $(1) = The C-family files to be compiled.
+# $(1) = The root directory (either $(SOURCE_ROOT) or the generated source directory).
+# $(2) = The C-family files to be compiled.
 define OBJ_OUT_FILES
 
-OBJ_DIR_$(d) := $(OBJ_DIR)/$$(subst $(SOURCE_ROOT)/,,$(d))
+OBJ_DIR_$(d) := $(OBJ_DIR)/$$(subst $(1)/,,$(d))
 
-o_$(d) := $$(addsuffix .o, $$(subst $(d),,$$(basename $(1))))
+o_$(d) := $$(addsuffix .o, $$(subst $(d),,$$(basename $(2))))
 o_$(d) := $$(addprefix $$(OBJ_DIR_$(d)), $$(o_$(d)))
 
 OBJ_$(t) += $$(o_$(d))
 DEP_$(d) := $$(o_$(d):%.o=%.d)
+
+endef
+
+# Define output files for generated C-family targets.
+#
+# $(1) = The path(s) to the target dependency files.
+define GEN_OUT_FILES
+
+gs_$(d) := $(foreach ext, $(C_SRC_EXTENSIONS), $(filter %$(ext), $(1)))
+gh_$(d) := $(foreach ext, $(C_INC_EXTENSIONS), $(filter %$(ext), $(1)))
+gl_$(d) := $(foreach ext, $(C_LIB_EXTENSIONS), $(filter %$(ext), $(1)))
+
+GEN_DIRS_$(d) := $$(abspath $$(dir $$(gs_$(d))))
+
+GEN_SRC_$(t) += $$(gs_$(d))
+GEN_INC_$(t) += $$(gh_$(d))
+GEN_LIB_$(t) += $$(gl_$(d))
 
 endef
 

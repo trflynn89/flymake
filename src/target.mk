@@ -51,12 +51,20 @@ else ifeq ($$(TARGET_TYPE_$$(t)), JAR)
     TARGET_FILE_$$(t) := $(JAR_DIR)/$$(t)-$(VERSION).jar
 else ifeq ($$(TARGET_TYPE_$$(t)), PKG)
     TARGET_FILE_$$(t) :=
+else ifeq ($$(TARGET_TYPE_$$(t)), SCRIPT)
+    ifeq ($$(TARGET_OUTPUT_$$(t)),)
+        TARGET_FILE_$$(t) := $(GEN_DIR)/$$(t).stamp
+    else
+        TARGET_FILE_$$(t) := $$(addprefix $(GEN_DIR)/, $$(TARGET_OUTPUT_$$(t)))
+    endif
 else
     $$(error Target type $$(TARGET_TYPE_$$(t)) not supported)
 endif
 
 # Define the path to the target release package.
-ifeq ($$(TARGET_TYPE_$$(t)), PKG)
+ifeq ($$(TARGET_TYPE_$$(t)), SCRIPT)
+    TARGET_PACKAGE_$$(t) :=
+else ifeq ($$(TARGET_TYPE_$$(t)), PKG)
     TARGET_PACKAGE_$$(t) := $(PKG_DIR)/$$(t)-$(VERSION).tar.bz2
 else ifeq ($(SYSTEM), LINUX)
     TARGET_PACKAGE_$$(t) := $(ETC_DIR)/$$(t)-linux-$(VERSION).$(arch).tar.bz2
@@ -68,11 +76,11 @@ endif
 
 TARGET_PACKAGES += $$(TARGET_PACKAGE_$$(t))
 
+# Define the make goal to build the targets.
+$$(t): $$(TARGET_FILE_$$(t)) $$(TARGET_PACKAGE_$$(t)) $$(TARGET_DEPENDENCIES_$$(t))
+
 TARGET_DEPENDENCIES_$$(t) := \
     $$(foreach dep, $$(TARGET_DEPENDENCIES_$$(target)), $$(TARGET_FILE_$$(dep)))
-
-# Define the make goal to build the targets.
-$$(t): $$(TARGET_FILE_$$(t)) $$(TARGET_PACKAGE_$$(t))
 
 # Define the compilation goals for the target.
 ifeq ($$(TARGET_TYPE_$$(t)), BIN)
@@ -82,11 +90,17 @@ ifeq ($$(TARGET_TYPE_$$(t)), BIN)
         $$(TARGET_PACKAGE_$$(t)), \
         $$(TARGET_DEPENDENCIES_$$(t)))
 else ifeq ($$(TARGET_TYPE_$$(t)), LIB)
-    $(call DEFINE_LIB_RULES, $$(TARGET_PATH_$$(t)), $$(TARGET_FILE_$$(t)), $$(TARGET_PACKAGE_$$(t)))
+    $(call DEFINE_LIB_RULES, \
+        $$(TARGET_PATH_$$(t)), \
+        $$(TARGET_FILE_$$(t)), \
+        $$(TARGET_PACKAGE_$$(t)), \
+        $$(TARGET_DEPENDENCIES_$$(t)))
 else ifeq ($$(TARGET_TYPE_$$(t)), JAR)
     $(call DEFINE_JAR_RULES, $$(TARGET_PATH_$$(t)), $$(TARGET_FILE_$$(t)), $$(TARGET_PACKAGE_$$(t)))
 else ifeq ($$(TARGET_TYPE_$$(t)), PKG)
     $(call DEFINE_PKG_RULES, $$(TARGET_PATH_$$(t)), $$(TARGET_PACKAGE_$$(t)))
+else ifeq ($$(TARGET_TYPE_$$(t)), SCRIPT)
+    $(call DEFINE_SCRIPT_RULES, $$(TARGET_PATH_$$(t)), $$(TARGET_ARGS_$$(t)), $$(TARGET_FILE_$$(t)))
 endif
 
 endef
