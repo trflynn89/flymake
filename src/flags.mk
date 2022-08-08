@@ -51,7 +51,7 @@ endif
 
 # Compiler flags for all C-family files.
 CF_ALL := -MD -MP -fPIC
-CF_ALL += -I$(SOURCE_ROOT) -I$(INSTALL_INC_DIR)
+CF_ALL += -I$(SOURCE_ROOT) -I$(GEN_DIR) -I$(INSTALL_INC_DIR)
 
 ifeq ($(SYSTEM), MACOS)
     CF_ALL += -isysroot $(XCODE)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
