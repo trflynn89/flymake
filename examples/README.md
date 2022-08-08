@@ -11,6 +11,8 @@ default installation location. It contains the following example targets:
 * simple_cpp_example_tests - An example unit test of the simple C++ project.
 * nested_cpp_example - A library to demonstrate inheritance of compiler flags.
 * nested_cpp_example_tests - An example unit test of the nested C++ project.
+* generated_cpp_example - A library to demonstrate generation of source files.
+* generated_cpp_example_tests - An example unit test of the generator C++ project.
 * jar_example - An executable JAR file created from a Java project.
 
 To build all of the above:
