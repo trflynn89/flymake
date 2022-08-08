@@ -103,6 +103,7 @@ OUT_DIR := $(output)/$(mode)
 CXX_DIR := $(OUT_DIR)/$(toolchain)/$(arch)
 BIN_DIR := $(CXX_DIR)/bin
 LIB_DIR := $(CXX_DIR)/lib
+GEN_DIR := $(CXX_DIR)/gen
 OBJ_DIR := $(CXX_DIR)/obj
 ETC_DIR := $(CXX_DIR)/etc
 
@@ -131,6 +132,7 @@ ifeq ($(verbose), 0)
 else
     $(info Bin dir = $(BIN_DIR))
     $(info Lib dir = $(LIB_DIR))
+    $(info Gen dir = $(GEN_DIR))
     $(info Obj dir = $(OBJ_DIR))
     $(info Etc dir = $(ETC_DIR))
     $(info JAR dir = $(JAR_DIR))
