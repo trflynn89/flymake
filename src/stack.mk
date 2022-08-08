@@ -21,7 +21,7 @@ sp := $$(sp).x
 pd_$$(sp) := $$(d)
 
 p := $$(d)
-d := $(realpath $(1))
+d := $(abspath $(1))
 
 ifneq ($$(p),)
     CFLAGS_$$(d) := $$(CFLAGS_$$(p))
