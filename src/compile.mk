@@ -55,7 +55,7 @@ endif
 # Define the make goal to link a binary target from a set of object files.
 #
 # $(1) = The path to the target output binary.
-# $(2) = The path(s) to the target dependency files.
+# $(2) = The path(s) to the target library dependency files.
 define BIN_RULES
 
 MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
@@ -189,6 +189,52 @@ $(1)/%.o: $(d)/%.mm $$(MAKEFILES_$(d))
 
 endef
 
+# Define all make goals required to execute a script target.
+#
+# $(1) = The path to the script.
+# $(2) = Space-separated arguments to pass to the script.
+define SCRIPT_RULES
+
+ifeq ($$(GEN_DIRS_$(d)),)
+    GEN_TARGET_$$(t) := $(GEN_DIR)/$$(t).stamp
+else
+    GEN_TARGET_$$(t) := $$(foreach src, $$(GEN_SRC_$$(t)), $$(dir $$(src))%$$(suffix $$(src)))
+    GEN_TARGET_$$(t) += $$(foreach inc, $$(GEN_INC_$$(t)), $$(dir $$(inc))%$$(suffix $$(inc)))
+endif
+
+$$(GEN_TARGET_$$(t)): $(1)
+	@echo -e "[$(YELLOW)Script$(DEFAULT) $(t)]"
+	@mkdir -p $(GEN_DIR) $(DATA_DIR)
+
+	$(Q)sources=($$(foreach source, $(GEN_SRC_$(t)) $(GEN_INC_$(t)), "$$(source)")); \
+	arguments=($$(foreach argument, $(2), "$$(argument)")); \
+	\
+	for source in "$$$${sources[@]}" ; do \
+		mkdir -p $$$${source%/*}; \
+		$(RM) $$$$source; \
+	done; \
+	\
+	$(1) $(GEN_DIR) $(DATA_DIR) $$$${arguments[@]}; \
+	status=$$$$?; \
+	\
+	if [[ $$$$status -ne 0 ]] ; then \
+		echo -e "[$(RED)ERROR$(DEFAULT)] Target $(t) exited with fatal error code: $$$$status"; \
+		exit 1; \
+	fi; \
+	\
+	for source in "$$$${sources[@]}" ; do \
+		if [[ ! -f $$$$source ]] ; then \
+			echo -e "[$(RED)ERROR$(DEFAULT)] Target $(t) did not generate: $$$${source##*/}"; \
+			exit 1; \
+		fi \
+	done
+
+ifeq ($$(GEN_DIRS_$(d)),)
+	@touch $$@
+endif
+
+endef
+
 # Define the list of source files to all files in the current directory.
 #
 # $(1) - Family (CPP or JAVA) of files to wildcard.
@@ -220,13 +266,15 @@ else
     include $$(d)/files.mk
 endif
 
-$$(eval $$(call OBJ_OUT_FILES, $$(SRC_$$(d))))
+$$(eval $$(call OBJ_OUT_FILES, $(SOURCE_ROOT), $$(SRC_$$(d))))
+$$(eval $$(call GEN_OUT_FILES, $(4)))
 
 # Include the source directories.
-$$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $$(dir))))
+$$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(SOURCE_ROOT), $$(dir))))
+$$(foreach dir, $$(GEN_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(GEN_DIR), $$(dir))))
 
 # Define the compile rules.
-$$(eval $$(call BIN_RULES, $(2), $(4)))
+$$(eval $$(call BIN_RULES, $(2), $$(GEN_LIB_$$(t))))
 $$(eval $$(call PKG_RULES, $(3)))
 $$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d))))
 
@@ -243,6 +291,7 @@ endef
 # $(1) = The path to the target root directory.
 # $(2) = The path to the target output libraries.
 # $(3) = The path to the target release package.
+# $(4) = The path(s) to the target dependency files.
 define DEFINE_LIB_RULES
 
 # Push the current directory to the stack.
@@ -255,10 +304,12 @@ else
     include $$(d)/files.mk
 endif
 
-$$(eval $$(call OBJ_OUT_FILES, $$(SRC_$$(d))))
+$$(eval $$(call OBJ_OUT_FILES, $(SOURCE_ROOT), $$(SRC_$$(d))))
+$$(eval $$(call GEN_OUT_FILES, $(4)))
 
 # Include the source directories.
-$$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $$(dir))))
+$$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(SOURCE_ROOT), $$(dir))))
+$$(foreach dir, $$(GEN_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(GEN_DIR), $$(dir))))
 
 # Define the compile rules.
 $$(eval $$(call LIB_RULES, $(2)))
@@ -302,23 +353,26 @@ endef
 
 # Define all make goals and intermediate files required to compile C-family files.
 #
-# $(1) = The path to the source directory.
+# $(1) = The root directory (either $(SOURCE_ROOT) or the generated source directory).
+# $(2) = The path to the source directory.
 define DEFINE_OBJ_RULES
 
 # Push the current directory to the stack.
-$$(eval $$(call PUSH_DIR, $(1)))
+$$(eval $$(call PUSH_DIR, $(2)))
 
 # Define source, object and dependency files.
-ifeq ($$(wildcard $$(d)/files.mk),)
+ifeq ($(strip $(1)), $(GEN_DIR))
+    SRC_$$(d) := $$(foreach ext, $(C_SRC_EXTENSIONS), $$(filter $$(d)/%$$(ext), $$(GEN_SRC_$$(t))))
+else ifeq ($$(wildcard $$(d)/files.mk),)
     $$(eval $$(call WILDCARD_SOURCES, CPP))
 else
     include $$(d)/files.mk
 endif
 
-$$(eval $$(call OBJ_OUT_FILES, $$(SRC_$$(d))))
+$$(eval $$(call OBJ_OUT_FILES, $(1), $$(SRC_$$(d))))
 
 # Include the source directories.
-$$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $$(dir))))
+$$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(1), $$(dir))))
 
 # Define the compile rules.
 $$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d))))
@@ -367,6 +421,26 @@ include $$(d)/files.mk
 
 # Define the packaging rules.
 $$(eval $$(call PKG_RULES, $(2)))
+
+# Pop the current directory from the stack.
+$$(eval $$(call POP_DIR))
+
+endef
+
+# Define all make goals required to execute a script target.
+#
+# $(1) = The path to the script.
+# $(2) = Space-separated arguments to pass to the script.
+# $(3) = The path(s) to the generated target files.
+define DEFINE_SCRIPT_RULES
+
+# Push the current directory to the stack.
+$$(eval $$(call PUSH_DIR, $(dir $(1))))
+
+$$(eval $$(call GEN_OUT_FILES, $(3)))
+
+# Define the script rules.
+$$(eval $$(call SCRIPT_RULES, $(1), $(2)))
 
 # Pop the current directory from the stack.
 $$(eval $$(call POP_DIR))
