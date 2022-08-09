@@ -4,6 +4,12 @@
 SPACE :=
 SPACE +=
 
+# Supported file extensions.
+C_SRC_EXTENSIONS := .c .cc .cpp .m .mm
+C_INC_EXTENSIONS := .h .hh .hpp
+C_LIB_EXTENSIONS := .a .so.$(VERSION)
+JAVA_EXTENSIONS := .java
+
 # Define output files for compiled C-family targets.
 #
 # $(1) = The C-family files to be compiled.
