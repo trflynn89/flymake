@@ -112,6 +112,7 @@ JAR_DIR := $(JAVA_DIR)/bin
 CLASS_DIR := $(JAVA_DIR)/classes
 
 PKG_DIR := $(output)/out
+DATA_DIR := $(output)/data
 
 # ANSI escape sequences to use in stylized builds.
 ifeq ($(stylized), 1)
@@ -137,6 +138,7 @@ else
     $(info Etc dir = $(ETC_DIR))
     $(info JAR dir = $(JAR_DIR))
     $(info Class dir = $(CLASS_DIR))
+    $(info Data dir = $(DATA_DIR))
     $(info Toolchain = $(toolchain))
     $(info Mode = $(mode))
     $(info Arch = $(arch))
