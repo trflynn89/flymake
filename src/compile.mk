@@ -195,12 +195,10 @@ endef
 define WILDCARD_SOURCES
 
 ifeq ($(strip $(1)), CPP)
-    EXTENSIONS_$(d) := .c .cc .cpp .m .mm
+    SRC_$(d) := $$(foreach ext, $(C_SRC_EXTENSIONS), $$(wildcard $(d)/*$$(ext)))
 else ifeq ($(strip $(1)), JAVA)
-    EXTENSIONS_$(d) := .java
+    SRC_$(d) := $$(foreach ext, $(JAVA_EXTENSIONS), $$(wildcard $(d)/*$$(ext)))
 endif
-
-SRC_$(d) := $$(foreach ext, $$(EXTENSIONS_$(d)), $$(wildcard $(d)/*$$(ext)))
 
 endef
 

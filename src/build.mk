@@ -233,7 +233,7 @@ style:
 	$(formatter) $$format_flags -i $$(find $(SOURCE_ROOT)  \
 		$(foreach exclusion, $(STYLE_ENFORCEMENT_EXCLUSIONS), \
 			-not \$(OPEN_PAREN) -path "*$(exclusion)*" -prune \$(CLOSE_PAREN)) \
-		-type f -name "*.h" -o -name "*.hh" -o -name "*.hpp" \
-		-o -name "*.c" -o -name "*.cc" -o -name "*.cpp" \
-		-o -name "*.m" -o -name "*.mm" \
-		-o -name "*.java")
+		-type f \
+		$(foreach ext, $(C_SRC_EXTENSIONS), -name "*$(ext)" -o) \
+		$(foreach ext, $(C_INC_EXTENSIONS), -name "*$(ext)" -o) \
+		$(foreach ext, $(JAVA_EXTENSIONS), -name "*$(ext)"))
