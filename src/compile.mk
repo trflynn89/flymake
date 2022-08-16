@@ -152,36 +152,37 @@ endef
 # Define the make goal to compile C-family files to object files.
 #
 # $(1) = Path to directory where object files should be created.
+# $(2) = The path(s) to the target dependency files.
 define OBJ_RULES
 
 MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
 
 # C files.
-$(1)/%.o: $(d)/%.c $$(MAKEFILES_$(d))
+$(1)/%.o: $(d)/%.c $$(MAKEFILES_$(d)) | $(2)
 	@mkdir -p $$(@D)
 	@echo -e "[$(CYAN)Compile$(DEFAULT) $$(subst $(SOURCE_ROOT)/,,$$<)]"
 	$(call COMP_CC, $(CFLAGS_$(d)))
 
 # CC files.
-$(1)/%.o: $(d)/%.cc $$(MAKEFILES_$(d))
+$(1)/%.o: $(d)/%.cc $$(MAKEFILES_$(d)) | $(2)
 	@mkdir -p $$(@D)
 	@echo -e "[$(CYAN)Compile$(DEFAULT) $$(subst $(SOURCE_ROOT)/,,$$<)]"
 	$(call COMP_CXX, $(CXXFLAGS_$(d)))
 
 # C++ files.
-$(1)/%.o: $(d)/%.cpp $$(MAKEFILES_$(d))
+$(1)/%.o: $(d)/%.cpp $$(MAKEFILES_$(d)) | $(2)
 	@mkdir -p $$(@D)
 	@echo -e "[$(CYAN)Compile$(DEFAULT) $$(subst $(SOURCE_ROOT)/,,$$<)]"
 	$(call COMP_CXX, $(CXXFLAGS_$(d)))
 
 # Objective-C files.
-$(1)/%.o: $(d)/%.m $$(MAKEFILES_$(d))
+$(1)/%.o: $(d)/%.m $$(MAKEFILES_$(d)) | $(2)
 	@mkdir -p $$(@D)
 	@echo -e "[$(CYAN)Compile$(DEFAULT) $$(subst $(SOURCE_ROOT)/,,$$<)]"
 	$(call COMP_CC, $(CFLAGS_$(d)))
 
 # Objective-C++ files.
-$(1)/%.o: $(d)/%.mm $$(MAKEFILES_$(d))
+$(1)/%.o: $(d)/%.mm $$(MAKEFILES_$(d)) | $(2)
 	@mkdir -p $$(@D)
 	@echo -e "[$(CYAN)Compile$(DEFAULT) $$(subst $(SOURCE_ROOT)/,,$$<)]"
 	$(call COMP_CXX, $(CXXFLAGS_$(d)))
@@ -269,13 +270,13 @@ $$(eval $$(call OBJ_OUT_FILES, $(SOURCE_ROOT), $$(SRC_$$(d))))
 $$(eval $$(call GEN_OUT_FILES, $(4)))
 
 # Include the source directories.
-$$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(SOURCE_ROOT), $$(dir))))
-$$(foreach dir, $$(GEN_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(GEN_DIR), $$(dir))))
+$$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(SOURCE_ROOT), $$(dir), $(4))))
+$$(foreach dir, $$(GEN_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(GEN_DIR), $$(dir), $(4))))
 
 # Define the compile rules.
 $$(eval $$(call BIN_RULES, $(2)))
 $$(eval $$(call PKG_RULES, $(3)))
-$$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d))))
+$$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d)), $(4)))
 
 # Include dependency files.
 -include $$(DEP_$$(d))
@@ -307,13 +308,13 @@ $$(eval $$(call OBJ_OUT_FILES, $(SOURCE_ROOT), $$(SRC_$$(d))))
 $$(eval $$(call GEN_OUT_FILES, $(4)))
 
 # Include the source directories.
-$$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(SOURCE_ROOT), $$(dir))))
-$$(foreach dir, $$(GEN_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(GEN_DIR), $$(dir))))
+$$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(SOURCE_ROOT), $$(dir), $(4))))
+$$(foreach dir, $$(GEN_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(GEN_DIR), $$(dir), $(4))))
 
 # Define the compile rules.
 $$(eval $$(call LIB_RULES, $(2)))
 $$(eval $$(call PKG_RULES, $(3)))
-$$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d))))
+$$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d)), $(4)))
 
 # Include dependency files.
 -include $$(DEP_$$(d))
@@ -354,6 +355,7 @@ endef
 #
 # $(1) = The root directory (either $(SOURCE_ROOT) or the generated source directory).
 # $(2) = The path to the source directory.
+# $(3) = The path(s) to the target dependency files.
 define DEFINE_OBJ_RULES
 
 # Push the current directory to the stack.
@@ -371,10 +373,10 @@ endif
 $$(eval $$(call OBJ_OUT_FILES, $(1), $$(SRC_$$(d))))
 
 # Include the source directories.
-$$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(1), $$(dir))))
+$$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(1), $$(dir), $(3))))
 
 # Define the compile rules.
-$$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d))))
+$$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d)), $(3)))
 
 # Include dependency files.
 -include $$(DEP_$$(d))

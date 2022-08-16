@@ -77,10 +77,10 @@ endif
 TARGET_PACKAGES += $$(TARGET_PACKAGE_$$(t))
 
 # Define the make goal to build the targets.
-$$(t): $$(TARGET_FILE_$$(t)) $$(TARGET_PACKAGE_$$(t)) $$(TARGET_DEPENDENCIES_$$(t))
+$$(t): $$(TARGET_FILE_$$(t)) $$(TARGET_PACKAGE_$$(t))
 
-TARGET_DEPENDENCIES_$$(t) := \
-    $$(foreach dep, $$(TARGET_DEPENDENCIES_$$(target)), $$(TARGET_FILE_$$(dep)))
+TARGET_DEPENDENCY_FILES_$$(t) := \
+    $$(foreach dep, $$(TARGET_DEPENDENCIES_$$(t)), $$(TARGET_FILE_$$(dep)))
 
 # Define the compilation goals for the target.
 ifeq ($$(TARGET_TYPE_$$(t)), BIN)
@@ -88,13 +88,13 @@ ifeq ($$(TARGET_TYPE_$$(t)), BIN)
         $$(TARGET_PATH_$$(t)), \
         $$(TARGET_FILE_$$(t)), \
         $$(TARGET_PACKAGE_$$(t)), \
-        $$(TARGET_DEPENDENCIES_$$(t)))
+        $$(TARGET_DEPENDENCY_FILES_$$(t)))
 else ifeq ($$(TARGET_TYPE_$$(t)), LIB)
     $(call DEFINE_LIB_RULES, \
         $$(TARGET_PATH_$$(t)), \
         $$(TARGET_FILE_$$(t)), \
         $$(TARGET_PACKAGE_$$(t)), \
-        $$(TARGET_DEPENDENCIES_$$(t)))
+        $$(TARGET_DEPENDENCY_FILES_$$(t)))
 else ifeq ($$(TARGET_TYPE_$$(t)), JAR)
     $(call DEFINE_JAR_RULES, $$(TARGET_PATH_$$(t)), $$(TARGET_FILE_$$(t)), $$(TARGET_PACKAGE_$$(t)))
 else ifeq ($$(TARGET_TYPE_$$(t)), PKG)
