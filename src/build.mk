@@ -48,7 +48,7 @@ clean:
 
 # Run all unit tests.
 tests: args :=
-tests: $(TEST_TARGETS)
+tests: $(TEST_BINARIES)
 	$(Q)failed=0; \
 	\
 	for tgt in $(TEST_BINARIES) ; do \
@@ -104,7 +104,7 @@ commands:
 # Create profile report.
 profile: report := $(ETC_DIR)/profile
 profile: args :=
-profile: $(TEST_TARGETS)
+profile: $(TEST_BINARIES)
 	$(Q)mkdir -p $(dir $(report))
 
 ifeq ($(toolchain), gcc)
