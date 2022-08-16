@@ -57,7 +57,7 @@ endif
 # $(1) = The path to the target output binary.
 define BIN_RULES
 
-MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
+MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(d)/files.mk
 
 $(1): $$(OBJ_$$(t)) $$(MAKEFILES_$(d)) $$(GEN_STATIC_LIB_$$(t))
 	@mkdir -p $$(@D)
@@ -72,7 +72,7 @@ endef
 # $(1) = The path to the target output files.
 define LIB_RULES
 
-MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
+MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(d)/files.mk
 
 STATIC_LIB_$$(t) := $(filter %$(STATIC_LIB_EXTENSION), $(1))
 SHARED_LIB_$$(t) := $(filter %$(SHARED_LIB_EXTENSION), $(1))
@@ -97,7 +97,7 @@ endef
 # $(2) = The application entry point.
 define JAR_RULES
 
-MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
+MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(d)/files.mk
 
 $(1): $$(SOURCES_$$(t)) $$(MAKEFILES_$(d))
 	@# Remove the target's class directory as a safe measure in case Java files have been deleted.
@@ -131,7 +131,7 @@ $(1):
 
 else
 
-MAKEFILES_$(d) := $(BUILD_ROOT)/release.mk $(wildcard $(d)/*.mk)
+MAKEFILES_$(d) := $(BUILD_ROOT)/release.mk $(d)/files.mk
 
 $(1): REL_CMDS := $$(REL_CMDS_$$(t))
 $(1): REL_NAME := $$(REL_NAME_$$(t))
@@ -151,38 +151,43 @@ endef
 
 # Define the make goal to compile C-family files to object files.
 #
-# $(1) = Path to directory where object files should be created.
-# $(2) = The path(s) to the target dependency files.
+# $(1) = The root directory (either $(SOURCE_ROOT) or $(GEN_DIR)).
+# $(2) = Path to directory where object files should be created.
+# $(3) = The path(s) to the target dependency files.
 define OBJ_RULES
 
-MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
+ifeq ($(strip $(1)), $(SOURCE_ROOT))
+    MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(d)/files.mk
+else
+    MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk
+endif
 
 # C files.
-$(1)/%.o: $(d)/%.c $$(MAKEFILES_$(d)) | $(2)
+$(2)/%.o: $(d)/%.c $$(MAKEFILES_$(d)) | $(3)
 	@mkdir -p $$(@D)
 	@echo -e "[$(CYAN)Compile$(DEFAULT) $$(subst $(SOURCE_ROOT)/,,$$<)]"
 	$(call COMP_CC, $(CFLAGS_$(d)))
 
 # CC files.
-$(1)/%.o: $(d)/%.cc $$(MAKEFILES_$(d)) | $(2)
+$(2)/%.o: $(d)/%.cc $$(MAKEFILES_$(d)) | $(3)
 	@mkdir -p $$(@D)
 	@echo -e "[$(CYAN)Compile$(DEFAULT) $$(subst $(SOURCE_ROOT)/,,$$<)]"
 	$(call COMP_CXX, $(CXXFLAGS_$(d)))
 
 # C++ files.
-$(1)/%.o: $(d)/%.cpp $$(MAKEFILES_$(d)) | $(2)
+$(2)/%.o: $(d)/%.cpp $$(MAKEFILES_$(d)) | $(3)
 	@mkdir -p $$(@D)
 	@echo -e "[$(CYAN)Compile$(DEFAULT) $$(subst $(SOURCE_ROOT)/,,$$<)]"
 	$(call COMP_CXX, $(CXXFLAGS_$(d)))
 
 # Objective-C files.
-$(1)/%.o: $(d)/%.m $$(MAKEFILES_$(d)) | $(2)
+$(2)/%.o: $(d)/%.m $$(MAKEFILES_$(d)) | $(3)
 	@mkdir -p $$(@D)
 	@echo -e "[$(CYAN)Compile$(DEFAULT) $$(subst $(SOURCE_ROOT)/,,$$<)]"
 	$(call COMP_CC, $(CFLAGS_$(d)))
 
 # Objective-C++ files.
-$(1)/%.o: $(d)/%.mm $$(MAKEFILES_$(d)) | $(2)
+$(2)/%.o: $(d)/%.mm $$(MAKEFILES_$(d)) | $(3)
 	@mkdir -p $$(@D)
 	@echo -e "[$(CYAN)Compile$(DEFAULT) $$(subst $(SOURCE_ROOT)/,,$$<)]"
 	$(call COMP_CXX, $(CXXFLAGS_$(d)))
@@ -235,19 +240,6 @@ endif
 
 endef
 
-# Define the list of source files to all files in the current directory.
-#
-# $(1) - Family (CPP or JAVA) of files to wildcard.
-define WILDCARD_SOURCES
-
-ifeq ($(strip $(1)), CPP)
-    SRC_$(d) := $$(foreach ext, $(C_SRC_EXTENSIONS), $$(wildcard $(d)/*$$(ext)))
-else ifeq ($(strip $(1)), JAVA)
-    SRC_$(d) := $$(foreach ext, $(JAVA_EXTENSIONS), $$(wildcard $(d)/*$$(ext)))
-endif
-
-endef
-
 # Define all make goals required to build a target of type BIN (or TEST).
 #
 # $(1) = The path to the target root directory.
@@ -260,11 +252,7 @@ define DEFINE_BIN_RULES
 $$(eval $$(call PUSH_DIR, $(strip $(1))))
 
 # Define source, object, dependency, and binary files.
-ifeq ($$(wildcard $$(d)/files.mk),)
-    $$(eval $$(call WILDCARD_SOURCES, CPP))
-else
-    include $$(d)/files.mk
-endif
+include $$(d)/files.mk
 
 $$(eval $$(call OBJ_OUT_FILES, $(SOURCE_ROOT), $$(SRC_$$(d))))
 $$(eval $$(call GEN_OUT_FILES, $(4)))
@@ -276,7 +264,7 @@ $$(foreach dir, $$(GEN_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(GEN_DIR)
 # Define the compile rules.
 $$(eval $$(call BIN_RULES, $(2)))
 $$(eval $$(call PKG_RULES, $(3)))
-$$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d)), $(4)))
+$$(eval $$(call OBJ_RULES, $(SOURCE_ROOT), $$(OBJ_DIR_$$(d)), $(4)))
 
 # Include dependency files.
 -include $$(DEP_$$(d))
@@ -298,11 +286,7 @@ define DEFINE_LIB_RULES
 $$(eval $$(call PUSH_DIR, $(strip $(1))))
 
 # Define source, object, dependency, and binary files.
-ifeq ($$(wildcard $$(d)/files.mk),)
-    $$(eval $$(call WILDCARD_SOURCES, CPP))
-else
-    include $$(d)/files.mk
-endif
+include $$(d)/files.mk
 
 $$(eval $$(call OBJ_OUT_FILES, $(SOURCE_ROOT), $$(SRC_$$(d))))
 $$(eval $$(call GEN_OUT_FILES, $(4)))
@@ -314,7 +298,7 @@ $$(foreach dir, $$(GEN_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(GEN_DIR)
 # Define the compile rules.
 $$(eval $$(call LIB_RULES, $(2)))
 $$(eval $$(call PKG_RULES, $(3)))
-$$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d)), $(4)))
+$$(eval $$(call OBJ_RULES, $(SOURCE_ROOT), $$(OBJ_DIR_$$(d)), $(4)))
 
 # Include dependency files.
 -include $$(DEP_$$(d))
@@ -336,6 +320,7 @@ $$(eval $$(call PUSH_DIR, $(strip $(1))))
 
 # Define source, class, and generated files.
 include $$(d)/files.mk
+
 $$(eval $$(call JAVA_SRC_FILES, $$(SRC_$$(d))))
 $$(eval $$(call JAVA_JAR_FILES, $$(CLASS_PATH_$$(d)), $$(RESOURCES_$$(d))))
 
@@ -353,7 +338,7 @@ endef
 
 # Define all make goals and intermediate files required to compile C-family files.
 #
-# $(1) = The root directory (either $(SOURCE_ROOT) or the generated source directory).
+# $(1) = The root directory (either $(SOURCE_ROOT) or $(GEN_DIR)).
 # $(2) = The path to the source directory.
 # $(3) = The path(s) to the target dependency files.
 define DEFINE_OBJ_RULES
@@ -364,8 +349,6 @@ $$(eval $$(call PUSH_DIR, $(2)))
 # Define source, object and dependency files.
 ifeq ($(strip $(1)), $(GEN_DIR))
     SRC_$$(d) := $$(foreach ext, $(C_SRC_EXTENSIONS), $$(filter $$(d)/%$$(ext), $$(GEN_SRC_$$(t))))
-else ifeq ($$(wildcard $$(d)/files.mk),)
-    $$(eval $$(call WILDCARD_SOURCES, CPP))
 else
     include $$(d)/files.mk
 endif
@@ -376,7 +359,7 @@ $$(eval $$(call OBJ_OUT_FILES, $(1), $$(SRC_$$(d))))
 $$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(1), $$(dir), $(3))))
 
 # Define the compile rules.
-$$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d)), $(3)))
+$$(eval $$(call OBJ_RULES, $(1), $$(OBJ_DIR_$$(d)), $(3)))
 
 # Include dependency files.
 -include $$(DEP_$$(d))
@@ -395,11 +378,7 @@ define DEFINE_JAVA_RULES
 $$(eval $$(call PUSH_DIR, $(1)))
 
 # Define source, object and dependency files.
-ifeq ($$(wildcard $$(d)/files.mk),)
-    $$(eval $$(call WILDCARD_SOURCES, JAVA))
-else
-    include $$(d)/files.mk
-endif
+include $$(d)/files.mk
 
 $$(eval $$(call JAVA_SRC_FILES, $$(SRC_$$(d))))
 
