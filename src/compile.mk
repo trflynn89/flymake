@@ -55,16 +55,15 @@ endif
 # Define the make goal to link a binary target from a set of object files.
 #
 # $(1) = The path to the target output binary.
-# $(2) = The path(s) to the target library dependency files.
 define BIN_RULES
 
 MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
 
-$(1): $(2) $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
+$(1): $$(OBJ_$$(t)) $$(MAKEFILES_$(d)) $$(GEN_STATIC_LIB_$$(t))
 	@mkdir -p $$(@D)
 	@echo -e "[$(RED)Link$(DEFAULT) $$(subst $(output)/,,$$@)]"
 	$(call LINK_CXX, $(OBJ_$(t)), $(CXXFLAGS_$(d)), $(LDFLAGS_$(d)), \
-		$(LDLIBS_$(d)) $(filter %.a,$(2)))
+		$(LDLIBS_$(d)) $(GEN_STATIC_LIB_$(t)))
 
 endef
 
@@ -75,16 +74,16 @@ define LIB_RULES
 
 MAKEFILES_$(d) := $(BUILD_ROOT)/flags.mk $(wildcard $(d)/*.mk)
 
-STATIC_$$(t) := $(filter %.a,$(1))
-SHARED_$$(t) := $(filter %.$(SHARED_LIB_EXT).$(VERSION),$(1))
+STATIC_LIB_$$(t) := $(filter %$(STATIC_LIB_EXTENSION), $(1))
+SHARED_LIB_$$(t) := $(filter %$(SHARED_LIB_EXTENSION), $(1))
 
-$$(STATIC_$$(t)): $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
+$$(STATIC_LIB_$$(t)): $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
 	@echo -e "[$(GREEN)Static$(DEFAULT) $$(subst $(output)/,,$$@)]"
 	@$(RM) $$@
 	$(call STATIC, $(OBJ_$(t)))
 
-$$(SHARED_$$(t)): $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
+$$(SHARED_LIB_$$(t)): $$(OBJ_$$(t)) $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)
 	@echo -e "[$(GREEN)Shared$(DEFAULT) $$(subst $(output)/,,$$@)]"
 	$(call SHARED_CXX, $(OBJ_$(t)), $(CXXFLAGS_$(d)), $(LDFLAGS_$(d)))
@@ -274,7 +273,7 @@ $$(foreach dir, $$(SRC_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(SOURCE_R
 $$(foreach dir, $$(GEN_DIRS_$$(d)), $$(eval $$(call DEFINE_OBJ_RULES, $(GEN_DIR), $$(dir))))
 
 # Define the compile rules.
-$$(eval $$(call BIN_RULES, $(2), $$(GEN_LIB_$$(t))))
+$$(eval $$(call BIN_RULES, $(2)))
 $$(eval $$(call PKG_RULES, $(3)))
 $$(eval $$(call OBJ_RULES, $$(OBJ_DIR_$$(d))))
 

@@ -45,8 +45,8 @@ ifeq ($$(TARGET_TYPE_$$(t)), BIN)
         TEST_BINARIES += $$(TARGET_FILE_$$(t))
     endif
 else ifeq ($$(TARGET_TYPE_$$(t)), LIB)
-    TARGET_FILE_$$(t) := $(LIB_DIR)/$$(t).$(SHARED_LIB_EXT).$(VERSION)
-    TARGET_FILE_$$(t) += $(LIB_DIR)/$$(t).a
+    TARGET_FILE_$$(t) := $(LIB_DIR)/$$(t)$(STATIC_LIB_EXTENSION)
+    TARGET_FILE_$$(t) += $(LIB_DIR)/$$(t)$(SHARED_LIB_EXTENSION)
 else ifeq ($$(TARGET_TYPE_$$(t)), JAR)
     TARGET_FILE_$$(t) := $(JAR_DIR)/$$(t)-$(VERSION).jar
 else ifeq ($$(TARGET_TYPE_$$(t)), PKG)
