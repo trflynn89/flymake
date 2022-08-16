@@ -20,7 +20,15 @@ jobs:
       displayName: 'Configure'
 
     - script: |
+        make -C examples $(config) clean
+        make -C examples $(config)
+        make -C examples $(config) tests
+      displayName: 'Examples (single-process)'
+      failOnStderr: true
+
+    - script: |
+        make -j $(sysctl -n hw.ncpu) -C examples $(config) clean
         make -j $(sysctl -n hw.ncpu) -C examples $(config)
         make -j $(sysctl -n hw.ncpu) -C examples $(config) tests
-      displayName: 'Examples'
+      displayName: 'Examples (multi-process)'
       failOnStderr: true
