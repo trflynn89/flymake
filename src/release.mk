@@ -23,12 +23,12 @@ define BUILD_REL
     $(REL_CMDS) && \
     cd $(ETC_TMP_DIR) && \
     \
-    for f in $$(find .$(INSTALL_LIB_DIR) -type f -name "*\.$(SHARED_LIB_EXT)\.$(VERSION)") ; do \
+    for f in $$(find .$(INSTALL_LIB_DIR) -type f -name "*$(SHARED_LIB_EXTENSION)") ; do \
         src=$${f:1}; \
         dst=$${src%.*}; \
         ext=$${src##*.}; \
         \
-        while [[ "$$ext" != "$(SHARED_LIB_EXT)" ]] ; do \
+        while [[ "$$ext" != "$(SYSTEM_SHARED_LIB_EXTENSION)" ]] ; do \
             ln -sf $$src .$$dst; \
             \
             src=$$dst; \
@@ -105,13 +105,13 @@ endef
 define ADD_REL_LIB
 
 $(eval $(call SET_REL_VAR, $(t)))
-$(eval $(call ADD_REL_CMD, cp -f $(LIB_DIR)/$(t).a $(REL_LIB_DIR_$(t))))
-$(eval $(call ADD_REL_CMD, cp -f $(LIB_DIR)/$(t).$(SHARED_LIB_EXT).$(VERSION) $(REL_LIB_DIR_$(t))))
+$(eval $(call ADD_REL_CMD, cp -f $(LIB_DIR)/$(t)$(STATIC_LIB_EXTENSION) $(REL_LIB_DIR_$(t))))
+$(eval $(call ADD_REL_CMD, cp -f $(LIB_DIR)/$(t)$(SHARED_LIB_EXTENSION) $(REL_LIB_DIR_$(t))))
 $(eval $(call ADD_REL_CMD, $(STRIP) $(STRIP_FLAGS) $(REL_LIB_DIR_$(t))/$(t).*))
 
 REL_UNINSTALL_$(t) += $(REL_LIB_DIR_$(t))/$(t).*
-REL_FILES_$(t) += $(LIB_DIR)/$(t).a
-REL_FILES_$(t) += $(LIB_DIR)/$(t).$(SHARED_LIB_EXT).$(VERSION)
+REL_FILES_$(t) += $(LIB_DIR)/$(t)$(STATIC_LIB_EXTENSION)
+REL_FILES_$(t) += $(LIB_DIR)/$(t)$(SHARED_LIB_EXTENSION)
 
 endef
 

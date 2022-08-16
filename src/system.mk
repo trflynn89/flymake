@@ -49,9 +49,9 @@ endif
 
 # System-dependent shared library extension.
 ifeq ($(SYSTEM), LINUX)
-    SHARED_LIB_EXT := so
+    SYSTEM_SHARED_LIB_EXTENSION := so
 else ifeq ($(SYSTEM), MACOS)
-    SHARED_LIB_EXT := dylib
+    SYSTEM_SHARED_LIB_EXTENSION := dylib
 else
     $(error Unknown system $(SYSTEM), check system.mk)
 endif

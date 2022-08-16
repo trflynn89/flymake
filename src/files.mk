@@ -7,8 +7,10 @@ SPACE +=
 # Supported file extensions.
 C_SRC_EXTENSIONS := .c .cc .cpp .m .mm
 C_INC_EXTENSIONS := .h .hh .hpp
-C_LIB_EXTENSIONS := .a .so.$(VERSION)
 JAVA_EXTENSIONS := .java
+
+STATIC_LIB_EXTENSION := .a
+SHARED_LIB_EXTENSION := .$(SYSTEM_SHARED_LIB_EXTENSION).$(VERSION)
 
 # Define output files for compiled C-family targets.
 #
@@ -32,14 +34,12 @@ endef
 define GEN_OUT_FILES
 
 gs_$(d) := $(foreach ext, $(C_SRC_EXTENSIONS), $(filter %$(ext), $(1)))
-gh_$(d) := $(foreach ext, $(C_INC_EXTENSIONS), $(filter %$(ext), $(1)))
-gl_$(d) := $(foreach ext, $(C_LIB_EXTENSIONS), $(filter %$(ext), $(1)))
-
 GEN_DIRS_$(d) := $$(abspath $$(dir $$(gs_$(d))))
 
 GEN_SRC_$(t) += $$(gs_$(d))
-GEN_INC_$(t) += $$(gh_$(d))
-GEN_LIB_$(t) += $$(gl_$(d))
+GEN_INC_$(t) += $(foreach ext, $(C_INC_EXTENSIONS), $(filter %$(ext), $(1)))
+GEN_STATIC_LIB_$(t) += $(filter %$(STATIC_LIB_EXTENSION), $(1))
+GEN_SHARED_LIB_$(t) += $(filter %$(SHARED_LIB_EXTENSION), $(1))
 
 endef
 
