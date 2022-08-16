@@ -9,7 +9,6 @@
 #     profile = Run all unit tests and generate a code profile report of the unit test execution.
 #     coverage = Generate a code coverage report of the last unit test execution.
 #     install = Extract any target installation package in the file system root directory.
-#     setup = Install the toolchain packages used by flymake.
 #     style = Run clang-format on all source files.
 #
 # The above targets may be configured by a set of command line arguments defined in config.mk.
@@ -21,7 +20,6 @@
 .PHONY: profile
 .PHONY: coverage
 .PHONY: install
-.PHONY: setup
 .PHONY: style
 
 # Get the path to this file.
@@ -192,32 +190,6 @@ install: $(TARGET_PACKAGES)
 	fi; \
 	\
 	exit $$failed
-
-# Install dependencies.
-setup:
-ifeq ($(SYSTEM), LINUX)
-ifeq ($(VENDOR), DEBIAN)
-	$(Q)$(SUDO) apt install -y ccache clang clangd clang-format clang-tidy doxygen lld llvm gcc \
-		g++ lcov openjdk-18-jdk
-ifeq ($(arch), x86)
-	$(Q)$(SUDO) apt install -y gcc-multilib g++-multilib
-endif
-else ifeq ($(VENDOR), REDHAT)
-	$(Q)$(SUDO) dnf install -y ccache clang doxygen lld llvm gcc gcc-c++ lcov libasan libatomic \
-		libstdc++-static java-18-openjdk-devel
-ifeq ($(arch), x86)
-	$(Q)$(SUDO) dnf install -y glibc-devel.i686 libstdc++-static.i686 libasan.i686 libatomic.i686
-endif
-else
-	$(Q)echo "No setup rules for vendor $(VENDOR), check build.mk"
-	$(Q)exit 1
-endif
-else ifeq ($(SYSTEM), MACOS)
-	$(Q)xcode-select --install
-else
-	$(Q)echo "No setup rules for system $(SYSTEM), check build.mk"
-	$(Q)exit 1
-endif
 
 # Style enforcement.
 style: formatter := clang-format
