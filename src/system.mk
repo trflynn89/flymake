@@ -1,6 +1,9 @@
 # Determine information about the host system environment and define system-dependent variables.
 
-ARCH := $(shell uname -m)
+SYSTEM_AND_ARCH := $(shell uname -s -m)
+SYSTEM := $(word 1, $(SYSTEM_AND_ARCH))
+ARCH := $(word 2, $(SYSTEM_AND_ARCH))
+
 SUDO := $(shell which sudo)
 CCACHE := $(shell which ccache)
 
@@ -12,18 +15,12 @@ INSTALL_SRC_DIR := $(INSTALL_ROOT)/src
 INSTALL_LIB_DIR := $(INSTALL_ROOT)/lib
 
 # Determine host operating system.
-ifneq ($(wildcard /etc/debian_version),)
+ifeq ($(SYSTEM), Linux)
     SYSTEM := LINUX
-    VENDOR := DEBIAN
-else ifneq ($(wildcard /etc/redhat-release),)
-    SYSTEM := LINUX
-    VENDOR := REDHAT
-else ifeq ($(shell uname -s), Darwin)
+else ifeq ($(SYSTEM), Darwin)
     SYSTEM := MACOS
-    VENDOR := APPLE
-    XCODE := $(shell xcode-select -p)
 else
-    $(error Could not determine operating system, check system.mk)
+    $(error Unrecognized system $(SYSTEM), check system.mk)
 endif
 
 # Determine default architecture.
@@ -54,4 +51,9 @@ else ifeq ($(SYSTEM), MACOS)
     SYSTEM_SHARED_LIB_EXTENSION := dylib
 else
     $(error Unknown system $(SYSTEM), check system.mk)
+endif
+
+# On macOS, detect system Xcode installation path.
+ifeq ($(SYSTEM), MACOS)
+    XCODE := $(shell xcode-select -p)
 endif

@@ -299,8 +299,6 @@ The following secondary goals are defined by flymake to aid in development:
 * `style` - Run `clang-format` on all source files under `SOURCE_ROOT`. Run with `check=1` to verify
   that all source files are style compliant. Use `formatter` to override the path to the
   `clang-format` binary.
-* `setup` - Install (via the system's package manager) tools used by the flymake build system, such
-  as `gcc`, `clang`, `clang-format`, etc.
 
 ## Build configuration
 
