@@ -52,8 +52,9 @@ Note: header file extensions aren't important for compilation, but for some seco
 In general, using flymake is as simple as defining the targets you want to build and the paths to
 the source files for those targets.
 
-The only required file is a Makefile, which may exist anywhere in your project. This Makefile must
-define the following two variables:
+The only required files are a Makefile, which may exist anywhere in your project, and individual
+`files.mk` files in the source directories included by the Makefile. The Makefile must define the
+following two variables:
 
 * `SOURCE_ROOT` - The path to the the root directory of the project. All targets should fall under
   this path. This path will be added to the include path for all targets.
@@ -85,9 +86,23 @@ $(eval $(call ADD_TARGET, [target name], [target path], [target type], [target d
   script dependencies will automatically be compiled into the `BIN` or `LIB` target (see
   [Script targets](#script-targets)).
 
-With all targets defined, the last step is to import the flymake build system, `build.mk`. This will
-generate all of the Make goals required to build the defined targets, as well as goals to e.g. run
-unit tests, generate code coverage reports, etc. (see [Make goals](#make-goals)).
+With all targets defined, the last step in the Makefile is to import the flymake build system,
+`build.mk`. This will generate all of the Make goals required to build the defined targets, as well
+as goals to e.g. run unit tests, generate code coverage reports, etc. (see
+[Make goals](#make-goals)).
+
+Each of the target paths provided to an `ADD_TARGET` invocation must contain a `files.mk` to define
+subdirectories to include and specific source files to build. The following variables may be used to
+define these:
+
+* `SRC_DIRS_$(d)` - The list of subdirectories (relative to `d`) to build.
+* `SRC_$(d)` - The list of source files (in this directory) to build.
+
+> Note the variable `d` used here. This is a special variable that is defined just before each
+`files.mk` file is included. It is the path, prefixed with `SOURCE_ROOT`, to the directory of the
+current `files.mk`. This variable exists because flymake is a non-recursive build system (meaning
+the entire build for all targets occurs in one Make process). Thus, this variable is used whenever
+a variable might be defined in more than one `files.mk` file to avoid naming conflicts.
 
 ## Script targets
 
@@ -122,13 +137,16 @@ For example, if the layout of your project is as follows:
 ├── build/
 │   └── Makefile
 ├── lib/
+│   ├── files.mk
 │   ├── foo.hpp
 │   ├── foo.cpp
 │   ├── bar.hpp
 │   └── bar.cpp
 ├── bin/
+│   ├── files.mk
 │   └── main.cpp
 └── test/
+    ├── files.mk
     ├── main.cpp
     ├── foo.cpp
     └── bar.cpp
@@ -149,31 +167,31 @@ $(eval $(call ADD_TARGET, unit_tests, test, TEST, main_library))
 include /usr/local/src/fly/build.mk
 ```
 
+The `files.mk` should then simply define the source files in each directory:
+
+`lib/files.mk`: (here, `d` = `/path/to/lib`)
+```make
+SRC_$(d) := $(d)/foo.cpp $(d)/bar.cpp
+```
+
+`bin/files.mk`: (here, `d` = `/path/to/bin`)
+```make
+SRC_$(d) := $(d)/main.cpp
+```
+
+`test/files.mk`: (here, `d` = `/path/to/test`)
+```make
+SRC_$(d) := $(d)/main.cpp $(d)/foo.cpp $(d)/bar.cpp
+```
+
 That's it! You can run `make -C build` to build the entire project, or selectively build individual
 targets with e.g. `make -C build main_library`.
 
 ### More realistic C-family example
 
 The above example contains a rather flat directory structure - all targets are self-contained and
-do not have nested subdirectories.
-
-By default, flymake will find and build all source files in each target path. However, if your
-project is large, or has platform-specific files that shouldn't always be compiled, a bit more setup
-is required. Specifying subdirectories and specific source files to build involves adding a file
-called `files.mk`.
-
-Generally, a `files.mk` file would be added to the root target path to define the subdirectories to
-build. Additionally, a `files.mk` file may be added to any of those subdirectories to explicitly
-declare the source files to build. The following variables may be used to define these:
-
-* `SRC_DIRS_$(d)` - The list of subdirectories (relative to `d`) to build.
-* `SRC_$(d)` - The list of source files (in this directory) to build.
-
-> Note the variable `d` used here. This is a special variable that is defined just before each
-`files.mk` file is included. It is the path, prefixed with `SOURCE_ROOT`, to the directory of the
-current `files.mk`. This variable exists because flymake is a non-recursive build system (meaning
-the entire build for all targets occurs in one Make process). Thus, this variable is used whenever
-a variable might be defined in more than one `files.mk` file to avoid naming conflicts.
+do not have nested subdirectories. If your project is large, or has platform-specific files that
+shouldn't always be compiled, a bit more setup is required.
 
 For example, if the layout of your project is as follows:
 
@@ -185,6 +203,7 @@ For example, if the layout of your project is as follows:
 │   ├── lib.hpp
 │   ├── lib.cpp
 │   ├── foo/
+│   │   ├── files.mk
 │   │   ├── foo.hpp
 │   │   └── foo.cpp
 │   └── bar/
@@ -193,8 +212,10 @@ For example, if the layout of your project is as follows:
 │       ├── bar_linux.cpp
 │       └── bar_windows.cpp
 ├── bin/
+│   ├── files.mk
 │   └── main.cpp
 └── test/
+    ├── files.mk
     ├── main.cpp
     ├── foo.cpp
     └── bar.cpp
@@ -212,14 +233,15 @@ SRC_DIRS_$(d) := $(d)/foo $(d)/bar
 SRC_$(d) := $(d)/lib.cpp
 ```
 
+`lib/foo/files.mk`: (here, `d` = `/path/to/lib/foo`)
+```make
+SRC_$(d) := $(d)/foo.cpp
+```
+
 `lib/bar/files.mk`: (here, `d` = `/path/to/lib/bar`)
 ```make
 SRC_$(d) := $(d)/bar_linux.cpp
 ```
-
-> Important: The presence of a `files.mk` file disables the automatic detection of source files for
-that directory only. If you add a files.mk to a directory, you must explicitly define its source
-files.
 
 ### Java example
 

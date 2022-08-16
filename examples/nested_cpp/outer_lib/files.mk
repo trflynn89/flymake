@@ -4,4 +4,5 @@ SRC_DIRS_$(d) := \
 CXXFLAGS_$(d) += \
     -DOUTER_VALUE=123
 
-$(eval $(call WILDCARD_SOURCES, CPP))
+SRC_$(d) := \
+    $(d)/outer_lib.cpp

@@ -14,7 +14,7 @@ SHARED_LIB_EXTENSION := .$(SYSTEM_SHARED_LIB_EXTENSION).$(VERSION)
 
 # Define output files for compiled C-family targets.
 #
-# $(1) = The root directory (either $(SOURCE_ROOT) or the generated source directory).
+# $(1) = The root directory (either $(SOURCE_ROOT) or $(GEN_DIR)).
 # $(2) = The C-family files to be compiled.
 define OBJ_OUT_FILES
 
