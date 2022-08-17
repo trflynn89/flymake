@@ -22,7 +22,8 @@ $(eval $(call ADD_SCRIPT, \
     bar, \
     bar/generated.hpp bar/generated.cpp))
 
-$(eval $(call ADD_SCRIPT, true, generated_cpp/true.sh))
+$(eval $(call ADD_SCRIPT, generate_data, generated_cpp/generate_data.sh))
+$(eval $(call ADD_SCRIPT, verify_data, generated_cpp/verify_data.sh,,, generate_data))
 
 # Main targets.
 $(eval $(call ADD_TARGET, simple_c_example, simple_c, LIB))
@@ -39,7 +40,7 @@ $(eval $(call ADD_TARGET, \
     generated_cpp_example_tests, \
     generated_cpp/test, \
     TEST, \
-    generate_bar_sources generated_cpp_example true))
+    generate_bar_sources generated_cpp_example verify_data))
 
 # Import the build system.
 include /usr/local/src/fly/build.mk

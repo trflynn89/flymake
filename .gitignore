@@ -1,9 +1,10 @@
 #### Build
 
 out/
-debug/
-release/
-profile/
+examples/data/
+examples/debug/
+examples/release/
+examples/profile/
 
 #### General
 
