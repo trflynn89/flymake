@@ -68,12 +68,12 @@ ifneq ($$(TARGET_DEPENDENCIES_$(strip $(1))),)
         $$(foreach dep, $$(TARGET_DEPENDENCIES_$(strip $(1))), \
             $$(if $$(filter $$(TARGET_TYPE_$$(dep)), LIB SCRIPT),, \
             $$(error Target dependency $$(dep) must be a library or script, check your Makefile)))
-    else ifeq ($$(TARGET_TYPE_$(strip $(1))), LIB)
+    else ifneq ($$(filter $$(TARGET_TYPE_$(strip $(1))), LIB SCRIPT),)
         $$(foreach dep, $$(TARGET_DEPENDENCIES_$(strip $(1))), \
             $$(if $$(filter $$(TARGET_TYPE_$$(dep)), SCRIPT),, \
             $$(error Target dependency $$(dep) must be a script, check your Makefile)))
     else
-        $$(error Target dependencies are only supported for binary and library targets, check your Makefile)
+        $$(error Dependencies are not supported for target type $(strip $(3)), check your Makefile)
     endif
 endif
 
@@ -95,34 +95,16 @@ endef
 # $(5) = The target's dependencies.
 define ADD_SCRIPT
 
-ifeq ($(strip $(1)), $(filter $(TARGETS), $(strip $(1))))
-    $$(error Target $(strip $(1)) has already been defined, check your Makefile)
-else ifeq ($(wildcard $(SOURCE_ROOT)/$(strip $(2))),)
-    $$(error Could not find target path $(strip $(2)), check your Makefile)
-endif
+$(eval $(call ADD_TARGET, $(1), $(2), SCRIPT, $(5)))
 
-TARGETS += $(1)
-TARGET_PATH_$(strip $(1)) := $(realpath $(SOURCE_ROOT)/$(strip $(2)))
-TARGET_TYPE_$(strip $(1)) := SCRIPT
 TARGET_ARGS_$(strip $(1)) := $(3)
 TARGET_OUTPUT_$(strip $(1)) := $(4)
-TARGET_DEPENDENCIES_$(strip $(1)) := $(5)
 
 $$(foreach source, $$(TARGET_OUTPUT_$(strip $(1))), \
     $$(if $$(filter $$(source), $(GENERATED_SOURCES)), \
     $$(error Generated source file $$(source) has already been defined, check your Makefile)))
 
 GENERATED_SOURCES += $$(TARGET_OUTPUT_$(strip $(1)))
-
-ifneq ($$(TARGET_DEPENDENCIES_$(strip $(1))),)
-    $$(foreach dep, $$(TARGET_DEPENDENCIES_$(strip $(1))), \
-        $$(if $$(filter $(TARGETS), $$(dep)),, \
-        $$(error Target dependency $$(dep) has not been defined, check your Makefile)))
-
-    $$(foreach dep, $$(TARGET_DEPENDENCIES_$(strip $(1))), \
-        $$(if $$(filter $$(TARGET_TYPE_$$(dep)), SCRIPT),, \
-        $$(error Target dependency $$(dep) must be a script, check your Makefile)))
-endif
 
 endef
 
