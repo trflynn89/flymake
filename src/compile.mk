@@ -198,17 +198,18 @@ endef
 #
 # $(1) = The path to the script.
 # $(2) = Space-separated arguments to pass to the script.
-# $(3) = The path(s) to the target dependency files.
+# $(3) = The path(s) to the generated target files.
+# $(4) = The path(s) to the target dependency files.
 define SCRIPT_RULES
 
-ifeq ($$(GEN_DIRS_$(d)),)
+ifneq ($(filter %.stamp, $(3)),)
     GEN_TARGET_$$(t) := $(GEN_DIR)/$$(t).stamp
 else
     GEN_TARGET_$$(t) := $$(foreach src, $$(GEN_SRC_$$(t)), $$(dir $$(src))%$$(suffix $$(src)))
     GEN_TARGET_$$(t) += $$(foreach inc, $$(GEN_INC_$$(t)), $$(dir $$(inc))%$$(suffix $$(inc)))
 endif
 
-$$(GEN_TARGET_$$(t)): $(1) $(3)
+$$(GEN_TARGET_$$(t)): $(1) $(4)
 	@echo -e "[$(YELLOW)Script$(DEFAULT) $(t)]"
 	@mkdir -p $(GEN_DIR) $(DATA_DIR)
 
@@ -235,7 +236,7 @@ $$(GEN_TARGET_$$(t)): $(1) $(3)
 		fi \
 	done
 
-ifeq ($$(GEN_DIRS_$(d)),)
+ifneq ($(filter %.stamp, $(3)),)
 	@touch $$@
 endif
 
@@ -422,7 +423,7 @@ $$(eval $$(call PUSH_DIR, $(dir $(1))))
 $$(eval $$(call GEN_OUT_FILES, $(3)))
 
 # Define the script rules.
-$$(eval $$(call SCRIPT_RULES, $(1), $(2), $(4)))
+$$(eval $$(call SCRIPT_RULES, $(1), $(2), $(3), $(4)))
 
 # Pop the current directory from the stack.
 $$(eval $$(call POP_DIR))
