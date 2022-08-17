@@ -100,7 +100,11 @@ else ifeq ($$(TARGET_TYPE_$$(t)), JAR)
 else ifeq ($$(TARGET_TYPE_$$(t)), PKG)
     $(call DEFINE_PKG_RULES, $$(TARGET_PATH_$$(t)), $$(TARGET_PACKAGE_$$(t)))
 else ifeq ($$(TARGET_TYPE_$$(t)), SCRIPT)
-    $(call DEFINE_SCRIPT_RULES, $$(TARGET_PATH_$$(t)), $$(TARGET_ARGS_$$(t)), $$(TARGET_FILE_$$(t)))
+    $(call DEFINE_SCRIPT_RULES, \
+        $$(TARGET_PATH_$$(t)), \
+        $$(TARGET_ARGS_$$(t)), \
+        $$(TARGET_FILE_$$(t)), \
+        $$(TARGET_DEPENDENCY_FILES_$$(t)))
 endif
 
 endef
