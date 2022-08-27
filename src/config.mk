@@ -16,6 +16,9 @@ arch ?= $(arch)
 # Compiler warning level (0, 1, 2).
 strict ?= 2
 
+# Debug symbol level (0, 1, 2, 3).
+symbols ?= 1
+
 # C language standard.
 cstandard ?= c2x
 
