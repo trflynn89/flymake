@@ -150,14 +150,14 @@ JFLAGS += \
 
 # Add debug symbols, optimize release builds, or add profiling symbols.
 ifeq ($(mode), debug)
-    CF_ALL += -O0 -g
+    CF_ALL += -O0 -g$(symbols)
     JFLAGS += -g:lines,vars,source
 else ifeq ($(mode), release)
     CF_ALL += -O2 -DNDEBUG
     JFLAGS += -g:none
 else ifeq ($(mode), profile)
     ifeq ($(toolchain), gcc)
-        CF_ALL += -O2 -DNDEBUG -g -pg -DFLY_PROFILE
+        CF_ALL += -O2 -DNDEBUG -g$(symbols) -pg -DFLY_PROFILE
         LDFLAGS += -pg
     else
         $(error Profiling not supported with toolchain $(toolchain), check flags.mk)

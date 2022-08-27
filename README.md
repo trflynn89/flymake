@@ -336,6 +336,7 @@ The following options may be specified to configure the build:
 | `mode`        | `debug`, `release`, `profile` | `debug`                       | Compilation mode<sup>2</sup>. |
 | `arch`        | `x86`, `x64`                  | Defaults to host architecture | Compilation architecture, 32-bit or 64-bit. |
 | `strict`      | `0`, `1`, `2`                 | `2`                           | Compiler warning level<sup>3</sup>. |
+| `symbols`     | Any valid `-g` option         | `1`                           | Debug symbol level, passed directly to `-g`. |
 | `cstandard`   | Any valid `-std` option       | `c2x`                         | The language standard to use for C files, passed directly to `-std`. |
 | `cxxstandard` | Any valid `-std` option       | `c++2a`                       | The language standard to use for C++ files, passed directly to `-std`. |
 | `linker`      | Any valid `-fuse-ld` option   | `lld` on Linux, `ld` on macOS | The linker to use for creating executables, passed directly to `-fuse-ld`. |
